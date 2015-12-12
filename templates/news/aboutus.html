@@ -1,0 +1,47 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block %}
+	<title>关于我</title> 
+	<meta name="keywords" content="getqiu,关于我们">
+	<meta name="description" content="getqiu新闻检索系统关于我们">
+    <style>
+        .white-text{color:#FFF!important}
+    </style>
+{% endblock %}
+
+
+{% block main_body %}
+
+<!--self defined-->
+ 
+{% load staticfiles %}
+            <div class="jumbotron" style="background:url({% static 'news/image/bg/main2.jpg' %});height:66%">
+            <!--jumbotron content -->
+                <div class="container">
+                    
+                    <div class="col-md-12 "></div>
+                     
+                    <div class="col-md-12 block40p">
+                        <h1 class="white-text">May you a happy day</h1>
+                        <p class="white-text"> -powered by qiulimao</P>
+                                               
+                    </div>
+
+                    <div class="col-md-6 col-md-offset-3 col-sm-12 col-xs-12 block20p">
+                         <!--
+                            <a class="btn btn-danger btn-sm btn-pure-white" href="#" role="button">？</a>
+                            -->
+                     
+                    </div>
+
+                </div><!--for container -->
+              
+              </div><!--div for jumbotron-->
+<!--end selfdefined-->
+{# include 'news_base/carousel.html' #}				
+<script>
+	$("#like").click(function(){
+		$(this).html("Thanks!");
+	});
+</script>
+
+{% endblock %}

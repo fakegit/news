@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0 user-scalable=no">        
+    	{% load staticfiles %}
+        <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}">
+        <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" type="text/css"> 
+        <!--
+        <link href="{% static 'css/non-responsive.css' %}" rel="stylesheet" type="text/css"> 
+        -->
+        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+        <script type='text/javascript' src='{% static "js/holder.js" %}'></script>
+        <script type='text/javascript' src='{% static "js/jquery.form-verify.js" %}'></script>
+
+        {% block head_block %}
+           <title>getqiu新闻检索系统</title> 
+           <meta name="keywords" content="getqiu,163，新闻检索，">
+           <meta name="description" content="getqiu news新闻检索系统是基于django、scrapy实现的新闻采集和检索系统，系统能够快速的检索50万条新闻标题，并且系统已每天1000多条的速度添加新闻">
+        {% endblock %}
+        <style type='text/css'>
+            .body-extra-margin{margin-top:49px;}
+        </style>
+    </head>
+
+    <body>
+        {%block header%}
+
+            {% include 'news_base/header_top_info.html'%}
+            
+            {% include 'news_base/search_bar.html' %}
+        {%endblock%}
+
+        {% block navgation_bar %}
+        <!--导航条-->
+            {# load navbar_user_status_info #}
+            {# navbar_user_status_info request #}
+            {% include 'news_base/navbar.html' %}
+        <!--end导航条-->
+        
+        {% endblock %}
+
+        {% block main_body %}
+           #由其他子类继承实现
+           {% include 'news_base/default_main_body.html' %}
+        {% endblock %}
+
+        {%block footer%}
+            {%include 'news_base/footer.html'%}
+        {%endblock%}
+
+    </body>
+</html>

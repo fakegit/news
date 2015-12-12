@@ -1,0 +1,108 @@
+{% extends 'news_base/skeleton.html' %}
+
+{% block head_block%}
+       <title>{{search_info.search_word}}_getqiu新闻搬运工</title> 
+       <meta name="keywords" content="getqiu，新闻检索系统，新闻，检索，结果，热门新闻">
+       <meta name="description" content="我们从来不产生新闻，我们只是新闻的搬运工，我们只是提供更方便的新闻检索功能">
+{% endblock%}
+
+{% block main_body %}
+<div class="container">
+    <div class = "row">
+        <div class="col-md-12">
+            
+            <div class="page-header">
+                 
+                 <small>getqiu为您找到{{page_info.total_item}}个相关结果</small><p>&nbsp;</p>
+                 <!--
+                 <ul class='media-list'>
+                     <li class='meida'>
+                        <a class="pull-left" href="#">
+                            <a class="btn btn-sm btn-warning" href="#">
+                                已选条件
+                            </a>
+                        </a>
+                        <a class="btn btn-sm btn-danger" href="#">
+                            一个月以内 <span class="badge">X</span>
+                        </a>
+                        <a class="btn btn-sm btn-danger" href="#">
+                            经济类 <span class="badge">X</span>
+                        </a>                                                  
+                     </li>
+                 </ul>
+                 -->
+                 
+
+                     
+                
+                <ol class="breadcrumb">
+                    <!--条件筛选可以不用管页码，但是要管关键词 但是页码必须要管筛选词阿！-->
+                    <li>时间筛选：</li>
+                    {% for one_filter in filter_info.time_filter %}
+                      {% if one_filter.value == filter_info.active_time_filter %}
+                         <li><a href="#"><font color='green'>{{one_filter.tag}}</font></a></li>
+                      {% else %}
+                         <li><a href="{%url 'news:search_result' %}?{{encoded_url.delta_days}}&delta_days={{one_filter.value}}">{{one_filter.tag}}</a></li>   
+                      {% endif %}                   
+                    {% endfor %}
+                    <!--
+                    <li><a href="{%url 'news:search_result' %}?{{encoded_url.date_url}}&time_delta=7">一周以内</a></li> 
+                    <li><a href="{%url 'news:search_result' %}?{{encoded_url.date_url}}&time_delta=30">一个月以内</a></li>                             
+                    <li><a href="{%url 'news:search_result' %}?{{encoded_url.date_url}}&time_delta=365">一年以内</a></li>
+                    <li><a href="{%url 'news:search_result' %}?{{encoded_url.date_url}}&time_delta=3650">所有</a></li>
+                    -->
+                </ol>   
+                                      
+                <ol class="breadcrumb">
+                    <li>分类筛选：</li>
+                    {% for one_item in filter_info.category_filter %}
+                        {% if one_item.category == filter_info.active_category_filter %}
+                             <li><a href="#"><font color='green'>{{one_item.category_name}}</font></a></li>
+                        {% else %}
+                            <li><a href="{%url 'news:search_result' %}?{{encoded_url.category}}&category={{one_item.category}}">{{one_item.category_name}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>      
+              
+            </div>
+                      
+            <ul class="media-list">
+              {% load emphasize %}
+              {% for one_news in model_objects %}
+                    <li class="media">
+                      <a class="pull-left" href="#">
+                        <img class="media-object" src="http://img1.cache.netease.com/www/logo/logo-ipad-icon.png" alt="网易图标">
+                      </a>
+                      <div class="media-body">
+                         <h4 class="media-heading">
+                            <a href="{%url 'news:news_detail' one_news.hash_digest %}" target='_blank'>
+                                {{ one_news.title|redkeywords:search_info.searched_words }}
+                            </a>
+                        </h4>
+                        <h5 class="media-heading">发布时间：{{one_news.news_time}}</h5>
+                        <h5 class="media-heading">新闻位置：{{one_news.rank}}<small>【1表示头条，以此类推】</small></h5>            
+                      </div>
+                    </li>
+              {% endfor %}      
+              <!--
+
+                    <li class="media">
+                      <a class="pull-right" href="#">
+                        <img class="media-object" data-src="holder.js/64x64" alt="64x64">
+                    </a>
+                      <div class="media-body">
+                        <h4 class="media-heading">没有更多相关新闻了</h4>
+                        <h5>搜索功能逐渐完善</h5>
+                      </div>
+                    </li>
+                -->
+            </ul>
+      
+
+         </div>
+     </div>
+</div>
+
+
+{% include 'news/search_result_part/pagination_bar.part.html' %}
+{% endblock %}

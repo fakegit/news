@@ -1,0 +1,49 @@
+
+   <form method="GET" action="{% url 'news:search_result' %}">
+     {# csrf_token #}
+    <div class="input-group">
+      <!--
+      <input type="text" class="form-control" name="search_word" placeholder="搜索">
+      http://127.0.0.1:8000/search/?search_word=%E9%AB%98%E9%80%9F%E8%B7%AF
+       -->
+       <!--没有指定搜索狂，就自己写一个-->
+       {% if search_form %}
+           {{ search_form.search_word }}
+       {% else %}
+           {% load emphasize %}
+           {% newsvolume as total_news_volume %}
+           <input type="text" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
+       {%endif%}
+       
+      <span class="input-group-btn">
+        
+        <!--add
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              &nbsp;<span class="caret"></span>&nbsp;
+              <span class="sr-only">选项</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a ><input type="radio" name='search_mode' value="blur" checked>模糊搜索(快)</a></li>
+              <li><a ><input type="radio" name='search_mode' value="accurate">精确搜索（慢)</a></li>
+            </ul>
+       
+        end add-->
+        <button class="btn btn-warning" type="submit">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+      </span>
+      <!--
+      <span class="input-group-btn">
+          <button class="btn btn-warning" type="submit">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+       </span>
+       -->
+    </div><!-- /input-group -->
+
+	<small>
+		<p class="help-block">
+
+        {% load recommand %}
+        {% hotwords %}
+
+		
+	    </p>
+   </small>
+   </form>

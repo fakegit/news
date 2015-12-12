@@ -1,0 +1,93 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block %}
+	<title>建议与意见</title> 
+	<meta name="keywords" content="getqiu,新闻检索系统，意见，建议">
+	<meta name="description" content="新闻检索系统欢迎您提出意见和建议">
+{% endblock %}
+
+
+
+{%block main_body%}
+
+<div class="container">
+    <div class="row">
+        <div class='col-md-10 col-md-offset-2'>
+            {% load style %}
+            <form role="form" action="{% url 'news:suggestion' %}" method="POST" onsubmit="return suggest_form.validate();">
+                {% csrf_token %}
+                <font color = 'red'>
+                {{ form.non_field_errors }}
+                </font>
+                {{ form.media }}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }} <br>
+                        {{ field  }}
+                        {{ field.errors }} 
+                    </div>
+                {% endfor %}
+            
+                <button type="submit" class="btn btn-danger">提交</button>       
+                <p class="help-block">
+                </p>                     
+            </form> 
+
+       </div>
+    </div>
+</div>
+
+<script>
+ var tip_tool = new MessageTooltip({placement:"right"});
+ var title = new InputField({
+     selector:"#id_title",
+     regex:/^.+$/,
+     success_action:function(){
+         tip_tool.hide("[for='id_title']");
+     },
+     failed_action:function(){
+         tip_tool.show("[for='id_title']","标题不能为空");
+     },
+ });
+ 
+ var contact_email = new InputField({
+     selector:"#id_contact",
+     regex:/^[a-zA-Z0-9]+[a-zA-Z0-9_\.]+@([a-zA-Z0-9]+\.?)+[a-zA-Z0-9]+$/,
+ });
+ 
+ var contact_phone = new InputField({
+     selector:"#id_contact",
+     regex:/^\d{11}$/,
+ });
+ 
+ 
+ 
+ var contact = new InputFieldSet(Array(contact_email,contact_phone),{
+     together_validator:new LogicBetweenFields("OR"),
+     failed_action:function(){
+         
+         tip_tool.show("[for='id_contact']","联系方式不正确，必须符合手机号或者邮箱格式");
+     },
+     success_action:function(){
+         tip_tool.hide("[for='id_contact']");
+     }
+ });   
+
+var detail = new InputField({
+   selector:".cke_editable.cke_editable_themed.cke_contents_ltr.cke_show_borders",
+   regex:/^.{6,}$/,
+   failed_action:function(){
+       tip_tool.show("[for='id_detail']","内容为不要空");
+   },
+   success_action:function(){
+       tip_tool.hide("[for='id_detail']");
+   },
+});
+
+var suggest_form = new InputFieldSet(Array(title,contact));
+
+$("#id_title").blur(function(){title.validate();});
+$("#id_contact").blur(function(){contact.validate();});
+//$(".cke_editable.cke_editable_themed.cke_contents_ltr.cke_show_borders").blur(function(){detail.validate();});   
+</script>
+
+{%endblock%}

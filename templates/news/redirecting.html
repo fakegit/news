@@ -1,0 +1,46 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block %}
+	<title>{{one_news.title}}</title> 
+	<meta name="keywords" content="getqiu,跳转">
+	<meta name="description" content="新闻系统建议跳转">
+{% endblock %}
+
+{%block main_body%}
+<div class="container">
+	<div class='row'>
+		<div class='col-md-12' style="height:15%"><br></div>
+		<div class='col-md-4 col-md-offset-4'>
+    	   {% load staticfiles %}
+			<img src="{% static 'news/image/move.gif' %}" id="flash">			
+		</div>
+		<div class='col-md-12' style="height:15%"><br></div>
+	</div>
+</div>
+
+
+<script language="javascript" type="text/javascript">
+
+var total_second = 4
+
+function Redirect(){
+		window.location.href="{% url 'news:home_page' %}"; 		
+}
+
+function CountSecond(){
+	total_second = total_second - 1
+	if (total_second < 0){
+		total_second = 4
+		
+	}
+	var counter = new MessagePopover()
+	counter.show('#flash',"<font color='red'>"+total_second+"</font>之后自动跳转...<br>如跳转异常请点击<a href='/'>跳转</a>")
+}
+
+var talk = new MessagePopover({placement:"top"})
+talk.show('#flash',"已经收到您的建议，马上回去改进！<br>正在为您跳转");
+setTimeout('Redirect()',1000*4);
+setInterval('CountSecond()',1000);
+
+
+</script>
+{%endblock%}

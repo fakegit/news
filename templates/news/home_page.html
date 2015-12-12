@@ -1,0 +1,35 @@
+{% extends 'news_base/skeleton.html' %}
+
+{% block head_block%}
+       <title>whatsUp?我们从来不写新闻，我们只是新闻的搬运工--getqiu新闻检索系统</title> 
+       <meta name="keywords" content="getqiu,163，新闻检索，">
+       <meta name="description" content="getqiu news新闻检索系统是基于django、scrapy实现的新闻采集和检索系统，系统能够快速的检索50万条新闻标题，并且系统已每天1000多条的速度添加新闻">
+       
+{% endblock%}
+
+{%block header%}
+   {% include 'news_base/header_top_info.html'%}
+{%endblock%}
+
+{% block navgation_bar %}
+
+{% endblock %}
+
+{% block main_body%}
+<style>
+    .write_for_search_engine{
+        visibility:hidden;
+        font-size:xx-small;
+    }
+</style>
+<h1 class="write_for_search_engine">我们从来不写新闻，我们只是新闻的搬运工--getqiu</h1>
+<p class="write_for_search_engine">
+    听说某某出了一个什么全家桶软件集，只要装其中一款软件，剩余的10余种软件也会被自动装上去。好厉害的样子。--这句话让搜索引擎来读吧！
+</p>
+    {% include 'news/home_page_part/searchBox.part.html' %}
+    <center>
+    {% for i in ip_info %}
+    {{i}}
+    {%endfor%}
+    </center>
+{% endblock %}

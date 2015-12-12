@@ -1,0 +1,48 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block %}
+	<title>{{one_news.title}}</title> 
+	<meta name="keywords" content="getqiu,新闻检索系统，{{one_news.title}}">
+	<meta name="description" content="{{one_news.title}}新闻详细内容">
+{% endblock %}
+
+
+
+{%block main_body%}
+	 <div class="container">
+		 <div class='row'>
+			 <div class='col-md-8 col-md-offset-2'>
+				<div class='panel panel-default'>
+						<div class='panel-heading'><h3>{{one_news.title}}</h3></div>
+						<div class='panel-body'>
+							<ul class='media-list'>
+								<li class="media">
+									<a class="pull-right" href="{{one_news.news_url}}" target='_blank'>
+									  原文链接
+								    </a>
+									<div class="media-body">
+										<h4 class="media-heading">新闻位置：{{one_news.rank}}</h4>
+										<h5>{{one_news.news_time}}</h5>
+									</div>
+
+                                </li>
+								<li class='meida'>
+									<hr>
+								</li>
+							
+							</ul>
+							{{one_news.content|safe}}
+						</div>
+					<div class='panel-footer'>
+						<a href='http://www.163.com'>
+						本文转自网易新闻
+						</a>
+					</div>						
+				</div>
+                <script>
+                    $(".panel-body img").attr('class','img-responsive');
+                </script>
+
+	      </div>
+	 </div>
+ </div>
+{%endblock%}

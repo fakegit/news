@@ -1,0 +1,12 @@
+     <ul class="list-inline">
+        {% for hot_word in hotwords %}
+			   <li><a href="{% url 'news:search_result' %}?search_word={{hot_word}}">{{hot_word}}</a></li>
+
+        {%endfor%}
+        <!--
+		     <li><a href="{% url 'news:search_result' %}?search_word=美国">美国</a></li>
+			   <li><a href="{% url 'news:search_result' %}?search_word=日本">日本</a></li>
+		     <li><a href="{% url 'news:search_result' %}?search_word=上海">上海</a></li>
+			  <li><a href="{% url 'news:search_result' %}?search_word=股票">股票</a></li>        
+			-->
+      </ul>
