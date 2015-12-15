@@ -25,15 +25,15 @@ class NeteaseSpider(Spider):
 	]
 	#allowed_domains = ['jiankang.163.com']
 	
-	#start_urls=["http://money.163.com","http://tech.163.com","http://news.163.com","http://sports.163.com",
-	#				 "http://ent.163.com","http://auto.163.com",
-	#				 "http://home.163.com","http://war.163.com","http://discovery.163.com","http://mobile.163.com",
-	#				 "http://digi.163.com","http://lady.163.com","http://edu.163.com","http://jiankang.163.com",
-	#				 "http://travel.163.com",
-	#				 'http://sports.163.com/nba/','http://money.163.com/stock/',
-	#				 'http://mobile.163.com/iphone/','http://mobile.163.com/android/',"http://cd.house.163.com","http://bj.house.163.com",
-	#				 ]
-	start_urls = ["http://money.163.com/stock/"]
+	start_urls=["http://money.163.com","http://tech.163.com","http://news.163.com","http://sports.163.com",
+					 "http://ent.163.com","http://auto.163.com",
+					 "http://home.163.com","http://war.163.com","http://discovery.163.com","http://mobile.163.com",
+					 "http://digi.163.com","http://lady.163.com","http://edu.163.com","http://jiankang.163.com",
+					 "http://travel.163.com",
+					 'http://sports.163.com/nba/','http://money.163.com/stock/',
+					 'http://mobile.163.com/iphone/','http://mobile.163.com/android/',"http://cd.house.163.com","http://bj.house.163.com",
+					 ]
+	#start_urls = ["http://money.163.com/stock/"]
 	
 	custom_settings={'ITEM_PIPELINES':
 			{

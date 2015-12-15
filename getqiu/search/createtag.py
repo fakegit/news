@@ -31,8 +31,9 @@ class AddTag():
 	def save(self):
 		#jieba.loaduserdict(filename)
 		#tags = jieba.analyse.extract_tags(self.__get_to_extract_string())
-		tags_iteral = jieba.cut_for_search(self.__get_to_extract_string())
-		tags = filter(self.pickout_words,tags_iteral)
+		tags_iteral = jieba.lcut_for_search(self.__get_to_extract_string())
+		#使得唯一
+		tags = filter(self.pickout_words,set(tags_iteral))
 		#map(self.__connect_tag_with_object,tags)
 		tags_objects = map(self.__create_tag_object,tags)
 		self.model_object.tags_set.add(*tags_objects)

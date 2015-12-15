@@ -48,7 +48,7 @@ class TitleBasedEngine(object):
 		"""
 		使用jieba库，拆分出句子当中的关键词
 		"""
-		key_words = jieba.analyse.extract_tags(input_sting)
+		key_words = jieba.lcut(input_sting)
 		return key_words
 				
 	def execute(self,view_context):
@@ -126,6 +126,9 @@ class TagBasedSearch(TitleBasedEngine):
 		return tmp_queryset.filter(tags__tag_hash=tag_hash)
 		
 	def find_key_words(self,input_sting):
-		key_words = jieba.cut_for_search(input_sting)
-		return [word for word in key_words]
+		key_words = jieba.lcut(input_sting)
+		#key_words = jieba.cut_for_search(input_sting)
+		key_words = list(set(key_words))#去除重复
+		key_words = filter(lambda x:False if x in conf.MEANINGLESS_WORDS else True,key_words)
+		return key_words
 	
