@@ -50,8 +50,8 @@ DEFAULT_REQUEST_HEADERS = {
    'Accept-Language': 'en',
 }
 #AJAXCRAWL_ENABLED = True
-LOG_LEVEL = 'WARNING'
-#LOG_LEVEL = 'INFO'
+#LOG_LEVEL = 'WARNING'
+LOG_LEVEL = 'INFO'
 LOG_FILE = os.path.join(TOP_DIR,"news","scrapy_log.log")
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
