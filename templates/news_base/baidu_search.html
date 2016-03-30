@@ -1,0 +1,19 @@
+<script type="text/javascript">
+   
+   (function(){
+    $("#id_search_word").attr('id','bdcsMain');
+    document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));
+    var bdcs = document.createElement('script');
+    bdcs.type = 'text/javascript';
+    bdcs.async = true;
+    bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=7027273483967777566' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(bdcs, s);
+    })();
+    //$("#bdcsMain").parents('form').attr('action','http://www.getqiu.com/news/search/')
+    $("#bdcsMain").parents('form').attr('onsubmit','return search_news();')
+    function search_news(){
+        $("#bdcsMain").attr('name','search_word').parents('form').attr('action','http://www.getqiu.com/news/search/');
+        return true
+    }
+</script>

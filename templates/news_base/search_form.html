@@ -12,7 +12,7 @@
        {% else %}
            {% load emphasize %}
            {% newsvolume as total_news_volume %}
-           <input type="text" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
+           <input type="text" id="id_search_word" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
        {%endif%}
        
       <span class="input-group-btn">
@@ -40,10 +40,11 @@
 	<small>
 		<p class="help-block">
 
-        {% load recommand %}
-        {% hotwords %}
+        {# load recommand #}
+        {# hotwords #}
 
 		
 	    </p>
    </small>
    </form>
+   {# include 'news_base/baidu_search.html' #}
