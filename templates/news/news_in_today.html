@@ -1,0 +1,14 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block%}
+       <title>今日新闻_getqiu新闻搬运工</title> 
+       <meta name="keywords" content="getqiu，新闻检索系统，新闻，检索，结果，热门新闻">
+       <meta name="description" content="我们从来不产生新闻，我们只是新闻的搬运工，我们只是提供更方便的新闻检索功能">
+{% endblock%}
+
+{% block main_body %}
+  <ul>
+        {% for one_news in news %}
+        <li>{{ one_news.title }}</li>
+        {% endfor %}
+  </ul>
+{% endblock %}

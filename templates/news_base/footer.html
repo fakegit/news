@@ -18,7 +18,8 @@
                       <span class="glyphicon glyphicon-tags"></span>关于我
                      </a>&nbsp;&nbsp;
                      <br>
-                     Copyrights &copy;2014-2015 getqiu.com All Rights Reserved
+                     {% now "Y" as current_year %}
+                     Copyrights &copy;2014-{{ current_year }} getqiu.com All Rights Reserved
                      <br>
                      京ICP备:15022882号{{ user.username }}
                      <br><br>
