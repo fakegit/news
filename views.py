@@ -65,9 +65,9 @@ class SearchResult(TemplateView):
                 PageFilter(9,request_page),
                 ]
             m = lambda ctx,flt:flt.execute(ctx) #这句话就是执行各个filter的接口
-            start_search_clock  = time.clock()            
+            start_search_clock  = datetime.datetime.now()            
             view_context = reduce(m,filter_list,start_view_context)
-            end_search_clock  = time.clock()              
+            end_search_clock  = datetime.datetime.now()              
             #reduce 一把搞定！
             context = view_context.context
             context["search_elapsed_time"] = end_search_clock - start_search_clock
