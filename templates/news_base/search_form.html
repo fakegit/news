@@ -16,33 +16,56 @@
        {%endif%}
        
       <span class="input-group-btn">
-        
-        <!--add
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              &nbsp;<span class="caret"></span>&nbsp;
-              <span class="sr-only">选项</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li><a ><input type="radio" name='search_mode' value="blur" checked>模糊搜索(快)</a></li>
-              <li><a ><input type="radio" name='search_mode' value="accurate">精确搜索（慢)</a></li>
-            </ul>
-       
-        end add-->
+
+        <a class="btn btn-default" id="search-option" data-toggle="modal" data-target="#search-option-modal">
+          <span class="glyphicon glyphicon-filter"></span>&nbsp;</a>
         <button class="btn btn-warning" type="submit">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+
       </span>
-      <!--
-      <span class="input-group-btn">
-          <button class="btn btn-warning" type="submit">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
-       </span>
-       -->
+
     </div><!-- /input-group -->
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="search-option-modal" tabindex="-1" role="dialog" aria-labelledby="search-option-title">
+  s
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="search-option-title">搜索参数</h4>
+      </div>
+      <div class="modal-body">
+
+              <div class="form-group">
+                  {{ search_form.start_time.label_tag }} <br>
+                  {{ search_form.start_time  }}
+                  <p class="help-block">最早的新闻开始于：2011-09-01</p>
+              </div>
+              <div class="form-group">
+                  {{ search_form.end_time.label_tag }} <br>
+                  {{ search_form.end_time  }}
+                  {% now "Y-m-d" as today %}
+                  <p class="help-block">最新的新闻截止于：{{ today }}</p>
+              </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">确认</button>
+        <button type="reset" class="btn btn-primary">重置</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 	<small>
 		<p class="help-block">
 
         {% load recommand %}
         {% hotwords %}
-
+        
 		
 	    </p>
    </small>

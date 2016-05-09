@@ -22,19 +22,6 @@
                 </small>
                 <p>&nbsp;</p>
 
-
-                <ol class="breadcrumb">
-                    <!--条件筛选可以不用管页码，但是要管关键词 但是页码必须要管筛选词阿！-->
-                    <li>时间筛选：</li>
-                    {% for one_filter in filter_info.time_filter %}
-                      {% if one_filter.value == filter_info.active_time_filter %}
-                         <li><a href="#"><font color='green'>{{one_filter.tag}}</font></a></li>
-                      {% else %}
-                         <li><a href="{%url 'news:search_result' %}?{{encoded_url.delta_days}}&delta_days={{one_filter.value}}">{{one_filter.tag}}</a></li>   
-                      {% endif %}                   
-                    {% endfor %}
-
-                </ol>   
                                       
                 <ol class="breadcrumb">
                     <li>分类筛选：</li>

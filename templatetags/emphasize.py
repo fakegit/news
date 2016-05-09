@@ -30,12 +30,8 @@ def newsvolume():
     
 @register.filter(name="find_cover_img")
 def find_cover_img(input_string):
-    news_cover = "/static/news/image/newsCover.jpg"
-    if not input_string:
-        return news_cover
-        
+    DEFAULT_NEWS_COVER = "/static/news/image/newsCover.jpg"
     dom = lxml.html.document_fromstring(input_string)
-    cover = dom.xpath("//img[1]/@src")
-    if cover:
-        news_cover = cover[0]
+    covers = dom.xpath("//img/@src[starts-with(.,'http')]")
+    news_cover = covers[0] if covers else DEFAULT_NEWS_COVER
     return news_cover

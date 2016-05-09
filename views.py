@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView
 # Create your views here.
 from django.core.urlresolvers import reverse
-from .forms import SearchBoxForm,SuggestionForm,TestForm
+from .forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm
 from .models import News
 from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
 #from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -36,7 +36,7 @@ class HomePage(TemplateView):
         #调试阶段，所以可以看看随机产生的ip，实际上线根据情况渲染    
         #connections['default'].queries    
         #search_form = SearchBoxForm()
-        context = {'ip_info':ip_info.values()}
+        context = {'ip_info':ip_info.values(),"search_form":SearchBoxForm()}
         return render(request,self.template_name,context)
         
         
@@ -55,16 +55,21 @@ class SearchResult(TemplateView):
             query_word = request.GET.get('search_word')
             category = request.GET.get('category','all')
             request_page = request.GET.get('page',1)
-            delta_days = int(request.GET.get('delta_days',3650))
-            search_mode = request.GET.get("search_mode",'blur')
+
+            start_time = request.GET.get("start_time",datetime.date(2011,9,1))
+            end_time = request.GET.get("end_time",datetime.date.today())
+
+            start_time = start_time if start_time else datetime.date(2011,9,1)
+            end_time = end_time if end_time else datetime.date.today()
+
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','news_time','rank','content').all(),{'search_form':search_form},{"search_mode":search_mode})
+            start_view_context = ViewContext(News.objects.only('title','news_time','rank','content').all(),{'search_form':search_form},{})
             filter_list = [
-                TitleBasedEngine(query_word) if search_mode == 'accurate' else TagBasedSearch(query_word),
-                NewsFilter(category,delta_days,datetime.date.today()),
+                TagBasedSearch(query_word),
+                NewsFilter(category,start_time,end_time),
                 PageFilter(9,request_page),
                 ]
-            m = lambda ctx,flt:flt.execute(ctx) #这句话就是执行各个filter的接口
+            m = lambda context,_filter:_filter.execute(context) #这句话就是执行各个filter的接口
             start_search_clock  = datetime.datetime.now()            
             view_context = reduce(m,filter_list,start_view_context)
             end_search_clock  = datetime.datetime.now()              

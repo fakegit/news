@@ -94,12 +94,51 @@ class TitleBasedEngine(object):
 
 
 class TagBasedSearch(TitleBasedEngine):
-    
+    """
+    mysql> explain SELECT 
+        `news_news`.`id`, `news_news`.`title`, 
+        `news_news`.`rank`, `news_news`.`news_time`, 
+        `news_news`.`content` FROM `news_news`
+         WHERE (`news_news`.`news_time` >= '2016-03-31' AND `news_news`.`news_time` <= '2016-03-31') 
+         ORDER BY `news_news`.`news_time` DESC, `news_news`.`rank` ASC LIMIT 9 OFFSET 18;
+        +----+-------------+-----------+------+---------------+------+---------+------+-------+-----------------------------+
+        | id | select_type | table     | type | possible_keys | key  | key_len | ref  | rows  | Extra                       |
+        +----+-------------+-----------+------+---------------+------+---------+------+-------+-----------------------------+
+        |  1 | SIMPLE      | news_news | ALL  | NULL          | NULL | NULL    | NULL | 87368 | Using where; Using filesort |
+        +----+-------------+-----------+------+---------------+------+---------+------+-------+-----------------------------+
+    1 row in set (0.08 sec)
+
+    after using this index :
+        ##
+        #  create index search_result_index on news_news(news_time DESC,rank);
+        ##
+        mysql> explain SELECT 
+        `news_news`.`id`, `news_news`.`title`,
+         `news_news`.`rank`, `news_news`.`news_time`, 
+         `news_news`.`content` FROM `news_news` 
+         WHERE (`news_news`.`news_time` >= '2016-03-31' AND `news_news`.`news_time` <= '2016-03-31') 
+         ORDER BY `news_news`.`news_time` DESC, `news_news`.`rank` ASC LIMIT 9 OFFSET 18;
+        +----+-------------+-----------+-------+---------------------+---------------------+---------+------+------+---------------------------------------+
+        | id | select_type | table     | type  | possible_keys       | key                 | key_len | ref  | rows | Extra                                 |
+        +----+-------------+-----------+-------+---------------------+---------------------+---------+------+------+---------------------------------------+
+        |  1 | SIMPLE      | news_news | range | search_result_index | search_result_index | 3       | NULL |   62 | Using index condition; Using filesort |
+        +----+-------------+-----------+-------+---------------------+---------------------+---------+------+------+---------------------------------------+
+
+        1 row in set (0.07 sec)        
+    """
 
         
     def execute(self,view_context):
-        
+        WILD_CARD = "*"
+
         self.queryset = view_context.queryset
+        #----deal with wild card *
+        if self.input_sting == WILD_CARD:
+            search_context={'search_info':{'search_word':self.input_sting,'searched_words':WILD_CARD},}
+            url_parameter_dict = {"search_word":self.input_sting}
+            current_view_context = ViewContext(self.queryset.order_by('-news_time','rank').all(),search_context,url_parameter_dict)
+            return current_view_context.merge(view_context)
+
         key_words = self.find_key_words(self.input_sting)
         key_words_hash = map(lambda x:md5(x.encode('utf-8').lower()).hexdigest(),key_words)
         valid_hash_list = filter(self.filter_out,key_words_hash)

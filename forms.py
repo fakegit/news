@@ -11,7 +11,9 @@ class AddCrawlerTaskForm(forms.ModelForm):
     
     
 class SearchBoxForm(forms.Form):
-    search_word = forms.CharField(label = u"搜索",max_length = 20,widget=forms.TextInput({'class':'form-control'}))    
+    search_word = forms.CharField(label = u"搜索",max_length = 20,widget=forms.TextInput({'class':'form-control'}))
+    start_time = forms.DateField(label=u'开始时间',required=False,widget = forms.DateInput({'class':'form-control','type':'date'}))
+    end_time = forms.DateField(label=u'截止时间',required=False,widget = forms.DateInput({'class':'form-control','type':'date'}))    
     
 class TestForm(forms.Form):
     field1 = forms.CharField(label=u'field1',max_length=20,widget=forms.TextInput({'class':'form-control','placeholder':"field1"}))    
@@ -32,3 +34,10 @@ class SuggestionForm(forms.ModelForm):
             'title':forms.TextInput({'placeholder':'标题','class':'form-control'}),
             'contact':forms.TextInput({'placeholder':'留下您的联系方式，采纳会有礼品','class':'form-control'})
         }    
+
+
+class TimeWindowForm(forms.Form):
+    """
+    """
+    start_time = forms.DateField(label=u'开始时间',required=False)
+    end_time = forms.DateField(label=u'截止时间',required=False)
