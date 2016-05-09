@@ -63,7 +63,9 @@ class SearchResult(TemplateView):
             end_time = end_time if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','news_time','rank','content').all(),{'search_form':search_form},{})
+            start_view_context = ViewContext(News.objects.only('title','news_time','rank','content').all(),
+                                             {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
+                                             {})
             filter_list = [
                 TagBasedSearch(query_word),
                 NewsFilter(category,start_time,end_time),
