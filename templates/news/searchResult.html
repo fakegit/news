@@ -43,6 +43,7 @@
                       
             <ul class="media-list">
               {% load emphasize %}
+              {% load style %}
               {% for one_news in model_objects %}
                     <li class="media">
                       <div class="pull-left news-cover" >
@@ -57,7 +58,7 @@
                             </a>
                         </h4>
                         <h5 class="media-heading">发布时间：{{one_news.news_time}}</h5>
-                        <h5 class="media-heading">新闻位置：{{one_news.rank}}<small>【1表示头条，以此类推】</small></h5>            
+                        <h5 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}<small>【1表示头条，以此类推】</small></h5>            
                       </div>
                     </li>
               {% endfor %}      

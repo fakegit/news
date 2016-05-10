@@ -11,7 +11,7 @@ from w3lib.html import remove_tags
 from crawlers.items import NewsItem
 import re
 import datetime
-
+from news.settings import RANK_SORT_PARAMETER
 
 class NeteaseSpider(Spider):
     """
@@ -77,7 +77,7 @@ class NeteaseSpider(Spider):
             category,news_time = self.get_info_from_url(one_link.url)
             
             request = scrapy.Request(one_link.url,callback=self.parse_one_news)
-            request.meta['rank'] = rank+1
+            request.meta['rank'] = RANK_SORT_PARAMETER(rank+1)
             request.meta['category'] = category
             request.meta['news_time'] = news_time
             yield request

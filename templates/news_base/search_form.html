@@ -1,6 +1,8 @@
 
    <form method="GET" action="{% url 'news:search_result' %}">
-     {# csrf_token #}
+     {% load style %}
+     {% load emphasize %}
+     {% newsvolume as total_news_volume %}
     <div class="input-group">
       <!--
       <input type="text" class="form-control" name="search_word" placeholder="搜索">
@@ -8,10 +10,9 @@
        -->
        <!--没有指定搜索狂，就自己写一个-->
        {% if search_form %}
-           {{ search_form.search_word }}
+           {{ search_form.search_word|addplaceholder:total_news_volume }}
        {% else %}
-           {% load emphasize %}
-           {% newsvolume as total_news_volume %}
+
            <input type="text" id="id_search_word" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
        {%endif%}
        
@@ -38,7 +39,7 @@
         <h4 class="modal-title" id="search-option-title">搜索参数</h4>
       </div>
       <div class="modal-body">
-
+              
               <div class="form-group">
                   {{ search_form.start_time.label_tag }} <br>
                   {{ search_form.start_time  }}

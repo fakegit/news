@@ -72,7 +72,7 @@ class TitleBasedEngine(object):
         #实际上将搜索的逻辑关系委托给了searchStrategy这个类
         final_result = self.search_strategy.search(valid_words_list,self.queryset)
 
-        current_view_context =  ViewContext(final_result.order_by('-news_time','rank'),search_context,url_parameter_dict)
+        current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
         
@@ -136,7 +136,7 @@ class TagBasedSearch(TitleBasedEngine):
         if self.input_sting == WILD_CARD:
             search_context={'search_info':{'search_word':self.input_sting,'searched_words':WILD_CARD},}
             url_parameter_dict = {"search_word":self.input_sting}
-            current_view_context = ViewContext(self.queryset.order_by('-news_time','rank').all(),search_context,url_parameter_dict)
+            current_view_context = ViewContext(self.queryset.order_by('-news_time','-rank').all(),search_context,url_parameter_dict)
             return current_view_context.merge(view_context)
 
         key_words = self.find_key_words(self.input_sting)
@@ -150,7 +150,7 @@ class TagBasedSearch(TitleBasedEngine):
             return current_view_context.merge(view_context)
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
         
-        current_view_context =  ViewContext(final_result.order_by('-news_time','rank'),search_context,url_parameter_dict)
+        current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
     def filter_out(self,one_keyword_hash):

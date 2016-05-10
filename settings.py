@@ -1,0 +1,2 @@
+#coding:utf-8
+RANK_SORT_PARAMETER = 1000
