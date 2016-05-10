@@ -11,7 +11,7 @@ def datefilter(queryset,start_time,end_time=date.today()):
     """
     #today = date.today()
     #start_time = end_time-timedelta(days=delta_days)
-    return queryset.filter(news_time__gte=start_time).filter(news_time__lte=end_time)
+    return queryset.filter(news_time__gte=start_time,news_time__lte=end_time)
     
     
 def categoryfilter(queryset,category):

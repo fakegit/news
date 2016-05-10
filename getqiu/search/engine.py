@@ -124,7 +124,10 @@ class TagBasedSearch(TitleBasedEngine):
         |  1 | SIMPLE      | news_news | range | search_result_index | search_result_index | 3       | NULL |   62 | Using index condition; Using filesort |
         +----+-------------+-----------+-------+---------------------+---------------------+---------+------+------+---------------------------------------+
 
-        1 row in set (0.07 sec)        
+        1 row in set (0.07 sec)   
+        values = Blog.objects.filter(
+        name__contains='Cheddar').values_list('pk', flat=True)
+            entries = Entry.objects.filter(blog__in=list(values))     
     """
 
         
@@ -136,7 +139,7 @@ class TagBasedSearch(TitleBasedEngine):
         if self.input_sting == WILD_CARD:
             search_context={'search_info':{'search_word':self.input_sting,'searched_words':WILD_CARD},}
             url_parameter_dict = {"search_word":self.input_sting}
-            current_view_context = ViewContext(self.queryset.order_by('-news_time','-rank').all(),search_context,url_parameter_dict)
+            current_view_context = ViewContext(self.queryset.all(),search_context,url_parameter_dict)
             return current_view_context.merge(view_context)
 
         key_words = self.find_key_words(self.input_sting)
@@ -148,9 +151,12 @@ class TagBasedSearch(TitleBasedEngine):
         if not valid_hash_list:
             current_view_context = ViewContext(self.queryset.none(),search_context,url_parameter_dict)
             return current_view_context.merge(view_context)
+
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
-        
-        current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
+        # 在这个 没有排序过的queryset上做文章
+        ordered_result = self.queryset.filter(id__in=list(final_result.values_list('pk', flat=True))).order_by('-news_time','-rank')
+
+        current_view_context =  ViewContext(ordered_result,search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
     def filter_out(self,one_keyword_hash):

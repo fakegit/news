@@ -67,8 +67,8 @@ class SearchResult(TemplateView):
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
                                              {})
             filter_list = [
-                TagBasedSearch(query_word),
                 NewsFilter(category,start_time,end_time),
+                TagBasedSearch(query_word),
                 PageFilter(9,request_page),
                 ]
             m = lambda context,_filter:_filter.execute(context) #这句话就是执行各个filter的接口

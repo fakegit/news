@@ -31,6 +31,9 @@ def newsvolume():
 @register.filter(name="find_cover_img")
 def find_cover_img(input_string):
     DEFAULT_NEWS_COVER = "/static/news/image/newsCover.jpg"
+    if not input_string:
+        #有些时候，只获取到标题，没有新闻body,不判断要躺枪..
+        return DEFAULT_NEWS_COVER
     dom = lxml.html.document_fromstring(input_string)
     covers = dom.xpath("//img/@src[starts-with(.,'http')]")
     news_cover = covers[0] if covers else DEFAULT_NEWS_COVER
