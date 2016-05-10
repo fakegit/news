@@ -10,7 +10,7 @@ from django.db.models import Q,F
 from news.models import Tags
 from django.db import connection
 from news.getqiu.search import  conf
-
+from news.models import News
 
 def print_dict(item):
     for key,value in item.items():
@@ -139,7 +139,8 @@ class TagBasedSearch(TitleBasedEngine):
         if self.input_sting == WILD_CARD:
             search_context={'search_info':{'search_word':self.input_sting,'searched_words':WILD_CARD},}
             url_parameter_dict = {"search_word":self.input_sting}
-            current_view_context = ViewContext(self.queryset.all(),search_context,url_parameter_dict)
+            ordered_result = self.queryset.order_by('-id','-news_time','-rank')
+            current_view_context = ViewContext(ordered_result,search_context,url_parameter_dict)
             return current_view_context.merge(view_context)
 
         key_words = self.find_key_words(self.input_sting)
@@ -154,7 +155,7 @@ class TagBasedSearch(TitleBasedEngine):
 
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
         # 在这个 没有排序过的queryset上做文章
-        ordered_result = self.queryset.filter(id__in=list(final_result.values_list('pk', flat=True))).order_by('-news_time','-rank')
+        ordered_result = News.objects.filter(id__in=list(final_result.values_list('pk', flat=True))).order_by('-id','-news_time','-rank')
 
         current_view_context =  ViewContext(ordered_result,search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
