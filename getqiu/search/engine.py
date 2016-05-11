@@ -155,9 +155,8 @@ class TagBasedSearch(TitleBasedEngine):
 
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
         # 在这个 没有排序过的queryset上做文章
-        ordered_result = News.objects.filter(id__in=final_result.values('id')).order_by('-id','-news_time','-rank')
 
-        current_view_context =  ViewContext(ordered_result,search_context,url_parameter_dict)
+        current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
     def filter_out(self,one_keyword_hash):
