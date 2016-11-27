@@ -11,6 +11,7 @@ class News(models.Model):
     content = RichTextField(verbose_name="新闻内容")
     #add a hash field to unique the news item
     hash_digest = models.CharField(max_length=64,verbose_name="哈希摘要",unique=True)
+    cover = models.CharField(max_length=512,verbose_name="封面",default="/static/news/image/newsCover.jpg")
     
     class Meta:
         verbose_name="新闻"
@@ -108,4 +109,23 @@ class Suggestion(models.Model):
         
     def __unicode__(self):
         return self.title
+
+class MeaninglessWord(models.Model):
+    """
+    CREATE TABLE `news_meaningless_word` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `word` varchar(32) NOT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+    alter table news_news add column cover VARCHAR(512) NOT NULL DEFAULT '/static/news/image/newsCover.jpg';
     
+    """
+    word = models.CharField(max_length=32,verbose_name="词语")
+
+    class Meta:
+        verbose_name="meaningless word"
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.word    

@@ -8,6 +8,7 @@
 
 
 {%block main_body%}
+	{% load style %}
 	 <div class="container">
 		 <div class='row'>
 			 <div class='col-md-8 col-md-offset-2'>
@@ -20,7 +21,7 @@
 									  原文链接
 								    </a>
 									<div class="media-body">
-										<h4 class="media-heading">新闻位置：{{one_news.rank}}</h4>
+										<h4 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}</h4>
 										<h5>{{one_news.news_time}}</h5>
 									</div>
 

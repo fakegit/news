@@ -36,7 +36,16 @@ class HomePage(TemplateView):
         #调试阶段，所以可以看看随机产生的ip，实际上线根据情况渲染    
         #connections['default'].queries    
         #search_form = SearchBoxForm()
-        context = {'ip_info':ip_info.values(),"search_form":SearchBoxForm()}
+
+        ##
+        #   show the headline of today
+        ##
+        today = datetime.date.today()
+        news_today = News.objects.only('title','hash_digest')\
+                                 .filter(news_time=today,rank__gte=999)
+
+        context = {'ip_info':ip_info.values(),"search_form":SearchBoxForm(),"news_today":news_today}
+
         return render(request,self.template_name,context)
         
         
@@ -63,13 +72,13 @@ class SearchResult(TemplateView):
             end_time = end_time if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','news_time','rank','content').all(),
+            start_view_context = ViewContext(News.objects.only('title','news_time','rank','cover').all(),
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
                                              {})
             filter_list = [
                 NewsFilter(category,start_time,end_time),
                 TagBasedSearch(query_word),
-                PageFilter(9,request_page),
+                PageFilter(10,request_page),
                 ]
             m = lambda context,_filter:_filter.execute(context) #这句话就是执行各个filter的接口
             start_search_clock  = datetime.datetime.now()            
@@ -102,7 +111,8 @@ class NewsInToday(TemplateView):
     def get(self,request):
         """ """
         today = datetime.date.today()
-        news_today = News.objects.only("title","hash_digest").filter(news_time=(today)).order_by("rank")
+        news_today = News.objects.only('title','news_time','rank','cover','content')\
+                                 .filter(news_time=today,rank__gte=997).order_by("-rank")
         context = {
             "news":news_today,
         }

@@ -51,8 +51,8 @@
           <li><a href="{% url 'news:suggestion' %}">要不去提个建议?</a></li>
         </ul>
       </li>
-      <li ><a href="#">
-          <span class="glyphicon glyphicon-info-sign"></span><font id="focuson">重点关注</font>
+      <li ><a href="/news/news-today/">
+          <span class="glyphicon glyphicon-info-sign"></span><font id="focuson">今日头条</font>
                <span class="badge" style="background-color:red;">
                   1
                </span>          
@@ -61,7 +61,7 @@
     <script>
       var popover = new MessagePopover();
       $("#focuson").mouseover(function(){
-         popover.show("#focuson","功能正在开发，请关注");
+         popover.show("#focuson","点击查看");
       });
       $("#focuson").mouseleave(function(){
         popover.hide("#focuson");

@@ -2,17 +2,25 @@
 <div class="container">
   <div class="row">
     
-      <div class = "col-md-8 col-md-offset-2" style="height:30%">
+      <div class = "col-md-8 col-md-offset-2" style="height:20%">
         &nbsp;
       </div>
     
-      <div class="col-md-8 col-md-offset-2">
+      <div class="col-md-6 col-md-offset-3">
 
           {% include 'news_base/search_form.html' %}
       </div>
   
-      <div class = "col-md-8 col-md-offset-2" style="height:25%">
-        &nbsp;
+      <div class = "col-md-6 col-md-offset-3" style="height:30%">
+        <ul class="list-unstyled">
+          {% for one_news in news_today %}
+          <li style="margin-top:5px;">
+            <a href="{%url 'news:news_detail' one_news.hash_digest %}">
+              {{one_news.title}}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
   
   </div>

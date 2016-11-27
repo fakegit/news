@@ -3,12 +3,41 @@
        <title>今日新闻_getqiu新闻搬运工</title> 
        <meta name="keywords" content="getqiu，新闻检索系统，新闻，检索，结果，热门新闻">
        <meta name="description" content="我们从来不产生新闻，我们只是新闻的搬运工，我们只是提供更方便的新闻检索功能">
+       <style>
+          .news-cover{width:100px;height:100px;overflow:hidden;}
+       </style>
 {% endblock%}
 
 {% block main_body %}
-  <ul>
-        {% for one_news in news %}
-        <li>{{ one_news.title }}</li>
-        {% endfor %}
-  </ul>
+
+<div class="container">
+    <div class = "row">
+        <div class="col-md-8 col-md-offset-2">
+
+            <ul class="media-list">
+              {% load emphasize %}
+              {% load style %}
+              {% for one_news in news %}
+                    <li class="media">
+                      <div class="pull-left news-cover" >
+                
+                          <img src="{{ one_news.cover}}" alt="{{one_news.title}}" class="img-responsive">
+
+                      </div>
+                      <div class="media-body">
+                          <h4 class="media-heading">
+                            <a href="{%url 'news:news_detail' one_news.hash_digest %}" target='_blank'>
+                                {{ one_news.title }}
+                            </a>
+                        </h4>
+                        <h5 class="media-heading">发布时间：{{one_news.news_time}}</h5>
+                        <h5 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}</h5>
+                        <h5 class="media-heading">摘要:{{ one_news.content|striptags|truncatechars:60|wordwrap:20 }}</h5>            
+                      </div>
+                    </li>
+              {% endfor %}      
+            </ul>  
+        </div>
+    </div>
+</div>
 {% endblock %}

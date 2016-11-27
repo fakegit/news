@@ -49,3 +49,10 @@ class SuggestionAdmin(admin.ModelAdmin):
     list_per_page = 20
     
 admin.site.register(Suggestion,SuggestionAdmin)
+
+class MeaningLessWordAdmin(admin.ModelAdmin):
+    """
+    """
+    list_per_page=30
+
+admin.site.register(MeaninglessWord,MeaningLessWordAdmin)

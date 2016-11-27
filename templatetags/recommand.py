@@ -10,7 +10,7 @@ register = template.Library()
 def hotwords():
     #words_list = HotWords.read_most()
     if not cache.get("hot_words_list"):
-        hot_words_list = HotWords.read_most()
+        hot_words_list = HotWords.appear_most()
         cache.set("hot_words_list",hot_words_list,6*60*60)       
     return {'hotwords':cache.get("hot_words_list")}
     #return {'hotwords':['中国','美国']}

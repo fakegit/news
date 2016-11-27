@@ -12,8 +12,20 @@ import datetime
 #from datetime.date import today
 from hashlib import md5
 from news.getqiu.search.createtag import AddTag
+import lxml.html
 
 class NewsPipeline(object):
+    
+    def find_cover_img(self,input_string):
+        DEFAULT_NEWS_COVER = "/static/news/image/newsCover.jpg"
+        if not input_string:
+            #有些时候，只获取到标题，没有新闻body,不判断要躺枪..
+            return DEFAULT_NEWS_COVER
+        dom = lxml.html.document_fromstring(input_string)
+        covers = dom.xpath("//img/@src[starts-with(.,'http')]")
+        news_cover = covers[0] if covers else DEFAULT_NEWS_COVER
+        return news_cover
+
     def process_item(self,item,spider):
         try:
             try:
@@ -31,8 +43,10 @@ class NewsPipeline(object):
             except News.DoesNotExist:
                 #category 字段是在页面内容提取当中出现，不存放在news表中，故pop
                 news_category = item.pop("category")
+                news_cover = self.find_cover_img(item['content'])
                 #字典拆分，直接填入；但是扩展性不好
-                newItem = News(**dict(item))
+                newItem = News(cover=news_cover,**dict(item))
+                #newItem.cover = news_cover
                 #save()存入数据库，newItem也就有了id
                 newItem.save()
                 try:
