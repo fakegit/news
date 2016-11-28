@@ -17,6 +17,7 @@ class PageFilter():
         """
         
         paginator = Paginator(view_context.queryset,self.item_per_page)#设置每页10
+        paginator._count = 200 # 最多返回500个结果
         request_page_num = self.request_page
         total_item = paginator.count
         total_page = paginator.num_pages

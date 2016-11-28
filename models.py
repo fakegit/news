@@ -18,7 +18,7 @@ class News(models.Model):
         verbose_name_plural=verbose_name
     def __unicode__(self):
         return str(self.rank)+"-|_"+self.title
-        
+
 class NewsStatistic(models.Model):
     news = models.OneToOneField(News,verbose_name="新闻")
     click = models.IntegerField(default=0,verbose_name='点击次数')
@@ -28,7 +28,7 @@ class NewsStatistic(models.Model):
         verbose_name_plural=verbose_name
     def __unicode__(self):
         return "("+str(self.click)+")"+self.news.title    
-        
+
 class Tags(models.Model):
     tag = models.CharField(max_length=32,verbose_name="标签")
     tag_hash = models.CharField(max_length=64,unique=True,verbose_name="标签标示")
@@ -112,14 +112,14 @@ class Suggestion(models.Model):
 
 class MeaninglessWord(models.Model):
     """
-    CREATE TABLE `news_meaningless_word` (
+    CREATE TABLE `news_meaninglessword` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `word` varchar(32) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
     alter table news_news add column cover VARCHAR(512) NOT NULL DEFAULT '/static/news/image/newsCover.jpg';
-    
+
     """
     word = models.CharField(max_length=32,verbose_name="词语")
 
