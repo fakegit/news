@@ -8,14 +8,16 @@ from collections import Counter
 import re
 from itertools import ifilter
 import datetime 
+from news.utils import getDBConfigure
+
 utf8 = lambda s:s.encode("utf-8") if isinstance(s,unicode) else s 
 
 class HotWords():
     regex_verb = r'[v]'
     regex_number = r'[m]+'
-    regex_allowed = r'[rjt]+'
+    regex_allowed = r'(nr|nt|nz)'
     denied_words = set()
-    # ['中国','曝光','男子','女子','明年','今天','昨天']
+
 
     @classmethod
     def init(cls):
@@ -70,46 +72,21 @@ class HotWords():
         #   RECOMM_NUM = 8
         #   
         ##
-        try:
-            setting_RECOMM_DAYS = Settings.objects.get(key="RECOMM_DAYS")
-        except Settings.DoesNotExist:
-            setting_RECOMM_DAYS = Settings(key="RECOMM_DAYS",option="2")
-            setting_RECOMM_DAYS.save()
+ 
+        RECOMM_DAYS = getDBConfigure("RECOMM_DAYS",default=2,type_=int)
+        RECOMM_RANK_GT = getDBConfigure("RECOMM_RANK_GT",default=200,type_=int)
 
-        try:
-            setting_RECOMM_RANK_GT = Settings.objects.get(key="RECOMM_RANK_GT")
-        except Settings.DoesNotExist:
-            setting_RECOMM_RANK_GT = Settings(key="RECOMM_RANK_GT",option="200")
-            setting_RECOMM_RANK_GT.save()
-
-
-        try:
-            setting_RECOMM_HALF_DESC = Settings.objects.get(key="RECOMM_HALF_DESC")
-        except Settings.DoesNotExist:
-            setting_RECOMM_HALF_DESC = Settings(key="RECOMM_HALF_DESC",option="30.0")
-            setting_RECOMM_HALF_DESC.save()
-
-        try:
-            setting_RECOMM_NUM = Settings.objects.get(key="RECOMM_NUM")
-        except Settings.DoesNotExist:
-            setting_RECOMM_NUM = Settings(key="RECOMM_NUM",option="8")
-            setting_RECOMM_NUM.save()
-
-        try:
-            setting_RECOMM_RECORD_HOT = Settings.objects.get(key="RECOMM_RECORD_HOT")
-        except Settings.DoesNotExist:
-            setting_RECOMM_RECORD_HOT = Settings(key="RECOMM_RECORD_HOT",option="0")
-            setting_RECOMM_RECORD_HOT.save()
-
-        RECOMM_DAYS = int(setting_RECOMM_DAYS.option)
-        RECOMM_RANK_GT = int(setting_RECOMM_RANK_GT.option)
         RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
 
-        RECOMM_HALF_DESC = float(setting_RECOMM_HALF_DESC.option)        
-        RECOMM_NUM = int(setting_RECOMM_NUM.option)
+        RECOMM_HALF_DESC = getDBConfigure("RECOMM_HALF_DESC",default="30.0",type_=float)
+        RECOMM_NUM = getDBConfigure("RECOMM_NUM",default=8,type_=int)
 
-        RECOMM_RECORD_HOT = bool(int(setting_RECOMM_RECORD_HOT.option))
+        RECOMM_RECORD_HOT = getDBConfigure("RECOMM_RECORD_HOT",default=0,type_=lambda v:bool(int(v)))
 
+        RECOMM_ALLOWED_WORD_TYPE_REGEX = getDBConfigure("RECOMM_ALLOWED_WORD_TYPE_REGEX",default="(nr|nz|nt)",type_=str)
+
+        # 设置词性的正则表达式
+        cls.regex_allowed = re.compile(RECOMM_ALLOWED_WORD_TYPE_REGEX)
         ############END SETTINGS FORM DATABASE#################
         today = datetime.date.today()
         oneday = datetime.timedelta(days=RECOMM_DAYS) 
@@ -167,7 +144,7 @@ class HotWords():
 
     @classmethod
     def filter_in_only(cls,tag):
-        if re.search(cls.regex_allowed,tag.flag):
+        if re.match(cls.regex_allowed,tag.flag):
             return True
         return False 
 
