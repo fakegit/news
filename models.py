@@ -121,10 +121,10 @@ class MeaninglessWord(models.Model):
     alter table news_news add column cover VARCHAR(512) NOT NULL DEFAULT '/static/news/image/newsCover.jpg';
 
     """
-    word = models.CharField(max_length=32,verbose_name="词语")
+    word = models.CharField(max_length=32,unique=True,verbose_name="词语")
 
     class Meta:
-        verbose_name="meaningless word"
+        verbose_name="Meaningless Word"
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
@@ -147,6 +147,35 @@ class Settings(models.Model):
     class Meta:
         verbose_name="settings"
         verbose_name_plural = verbose_name
+        #unique_together = ("v1", "v2")
 
     def __unicode__(self):
-        return self.key     
+        return self.key
+
+class HotWordTrace(models.Model):
+    """
+    CREATE TABLE `news_hotwordtrace` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `word` varchar(32) NOT NULL,
+    `time` date NOT NULL,
+    `rank` int(11) NOT NULL,
+    `reliable` TINYINT(1) NOT NULL,
+    `score` float NOT NULL,
+    `note` varchar(128) NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `index__time__word__reliable` (`time`,`word`,`reliable`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;      
+    """
+    word = models.CharField(max_length=32,verbose_name="词语")
+    time = models.DateField(auto_now_add=True,verbose_name="推荐时间")
+    rank = models.IntegerField(verbose_name="排序",default=0)
+    reliable = models.BooleanField(default=True,verbose_name="reliable")
+    score = models.FloatField(default=0.0,verbose_name="推荐因子")
+    note = models.CharField(max_length=128,verbose_name="备注",default="additional note")
+    class Meta:
+        verbose_name="hotwordtrace"
+        verbose_name_plural = verbose_name
+        index_together = ("time","word","reliable")
+
+    def __unicode__(self):
+        return self.word    

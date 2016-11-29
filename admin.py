@@ -64,3 +64,13 @@ class SettingsAdmin(admin.ModelAdmin):
     list_per_page=30
 
 admin.site.register(Settings,SettingsAdmin)
+
+
+
+class HotWordTraceAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display=('time','word',"score","rank")
+    list_per_page=30
+
+admin.site.register(HotWordTrace,HotWordTraceAdmin)

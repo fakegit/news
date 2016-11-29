@@ -1,5 +1,5 @@
 #-*-coding:utf-8-*-
-from news.models import NewsStatistic,News,MeaninglessWord,Settings
+from news.models import NewsStatistic,News,MeaninglessWord,Settings,HotWordTrace
 import jieba
 import jieba.analyse
 import jieba.posseg
@@ -7,7 +7,7 @@ import datetime
 from collections import Counter
 import re
 from itertools import ifilter
-
+import datetime 
 utf8 = lambda s:s.encode("utf-8") if isinstance(s,unicode) else s 
 
 class HotWords():
@@ -95,6 +95,12 @@ class HotWords():
             setting_RECOMM_NUM = Settings(key="RECOMM_NUM",option="8")
             setting_RECOMM_NUM.save()
 
+        try:
+            setting_RECOMM_RECORD_HOT = Settings.objects.get(key="RECOMM_RECORD_HOT")
+        except Settings.DoesNotExist:
+            setting_RECOMM_RECORD_HOT = Settings(key="RECOMM_RECORD_HOT",option="0")
+            setting_RECOMM_RECORD_HOT.save()
+
         RECOMM_DAYS = int(setting_RECOMM_DAYS.option)
         RECOMM_RANK_GT = int(setting_RECOMM_RANK_GT.option)
         RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
@@ -102,11 +108,13 @@ class HotWords():
         RECOMM_HALF_DESC = float(setting_RECOMM_HALF_DESC.option)        
         RECOMM_NUM = int(setting_RECOMM_NUM.option)
 
+        RECOMM_RECORD_HOT = bool(int(setting_RECOMM_RECORD_HOT.option))
+
         ############END SETTINGS FORM DATABASE#################
         today = datetime.date.today()
         oneday = datetime.timedelta(days=RECOMM_DAYS) 
         yesterday=today - oneday         
-        recent_news = News.objects.filter(news_time__gt=yesterday,news_time__lt=today,rank__gt=(1000-200))\
+        recent_news = News.objects.filter(news_time__gte=yesterday,news_time__lte=today,rank__gt=(1000-200))\
                                   .only("title")\
                                   .order_by("-news_time").all()[0:RECOMM_NEWSLIMIT]
         #tagList = []
@@ -134,8 +142,18 @@ class HotWords():
         #hot_word_tube = counter.most_common(8)
         #hot_words = [ str(x[0])+"/"+str(x[1]) for x in hot_word_tube]
         hot_words = [ x[0] for x in hot_word_tube[0:RECOMM_NUM]]
-        # for k,v in hot_word_tube:
-        #     print k,v
+
+        # 根据是否开启热词记录
+        if RECOMM_RECORD_HOT:
+            for i,w in enumerate(hot_word_tube[0:RECOMM_NUM]):
+                try:
+                    hotword = HotWordTrace.objects.only("word")\
+                                          .get(time=datetime.date.today(),word=w[0])
+                except HotWordTrace.DoesNotExist:
+                    note="using %s/(1+%s)" % (RECOMM_HALF_DESC,RECOMM_HALF_DESC) # for debug popurse
+                    hotword = HotWordTrace(word=w[0],rank=i+1,score=w[1],note=note)
+                    hotword.save()
+
         return hot_words
 
 
