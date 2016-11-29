@@ -129,3 +129,24 @@ class MeaninglessWord(models.Model):
 
     def __unicode__(self):
         return self.word    
+
+class Settings(models.Model):
+    """
+    CREATE TABLE `news_settings` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `key` varchar(32) NOT NULL,
+    `option` varchar(128) NOT NULL,
+    `comment` varchar(512) NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_index__key` (`key`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;    
+    """
+    key = models.CharField(max_length=32,unique=True,verbose_name="option Name")
+    option = models.CharField(max_length=128,verbose_name="value",default="0")
+    comment = models.CharField(max_length=512,verbose_name="注释",default="COMMENT")
+    class Meta:
+        verbose_name="settings"
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.key     

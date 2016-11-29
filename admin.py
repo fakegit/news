@@ -56,3 +56,11 @@ class MeaningLessWordAdmin(admin.ModelAdmin):
     list_per_page=30
 
 admin.site.register(MeaninglessWord,MeaningLessWordAdmin)
+
+class SettingsAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display=('key','option',"comment")
+    list_per_page=30
+
+admin.site.register(Settings,SettingsAdmin)

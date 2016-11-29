@@ -1,5 +1,5 @@
 #-*-coding:utf-8-*-
-from news.models import NewsStatistic,News,MeaninglessWord
+from news.models import NewsStatistic,News,MeaninglessWord,Settings
 import jieba
 import jieba.analyse
 import jieba.posseg
@@ -60,12 +60,57 @@ class HotWords():
             查找tilte当中出现最多的关键词
         """
         cls.init()
+        ##
+        # get configure from database
+        #   
+        #   RECOMM_DAYS = 2
+        #   RECOMM_RANK_GT = 200
+        #   RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
+        #   RECOMM_HALF_DESC = 30
+        #   RECOMM_NUM = 8
+        #   
+        ##
+        try:
+            setting_RECOMM_DAYS = Settings.objects.get(key="RECOMM_DAYS")
+        except Settings.DoesNotExist:
+            setting_RECOMM_DAYS = Settings(key="RECOMM_DAYS",option="2")
+            setting_RECOMM_DAYS.save()
 
+        try:
+            setting_RECOMM_RANK_GT = Settings.objects.get(key="RECOMM_RANK_GT")
+        except Settings.DoesNotExist:
+            setting_RECOMM_RANK_GT = Settings(key="RECOMM_RANK_GT",option="200")
+            setting_RECOMM_RANK_GT.save()
+
+
+        try:
+            setting_RECOMM_HALF_DESC = Settings.objects.get(key="RECOMM_HALF_DESC")
+        except Settings.DoesNotExist:
+            setting_RECOMM_HALF_DESC = Settings(key="RECOMM_HALF_DESC",option="30.0")
+            setting_RECOMM_HALF_DESC.save()
+
+        try:
+            setting_RECOMM_NUM = Settings.objects.get(key="RECOMM_NUM")
+        except Settings.DoesNotExist:
+            setting_RECOMM_NUM = Settings(key="RECOMM_NUM",option="8")
+            setting_RECOMM_NUM.save()
+
+        RECOMM_DAYS = int(setting_RECOMM_DAYS.option)
+        RECOMM_RANK_GT = int(setting_RECOMM_RANK_GT.option)
+        RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
+
+        RECOMM_HALF_DESC = float(setting_RECOMM_HALF_DESC.option)        
+        RECOMM_NUM = int(setting_RECOMM_NUM.option)
+
+        ############END SETTINGS FORM DATABASE#################
         today = datetime.date.today()
-        oneday = datetime.timedelta(days=3) 
+        oneday = datetime.timedelta(days=RECOMM_DAYS) 
         yesterday=today - oneday         
-        recent_news = News.objects.filter(news_time__gt=yesterday,news_time__lt=today).only("title").order_by("-news_time").all()[0:500]
-        tagList = []
+        recent_news = News.objects.filter(news_time__gt=yesterday,news_time__lt=today,rank__gt=(1000-200))\
+                                  .only("title")\
+                                  .order_by("-news_time").all()[0:RECOMM_NEWSLIMIT]
+        #tagList = []
+        tagMap = dict()
         for news in recent_news:
             tags = jieba.posseg.cut(news.title)
             tags = filter(cls.filter_out_short,tags)
@@ -73,15 +118,26 @@ class HotWords():
             tags = filter(cls.filter_out_number,tags)
             tags = filter(cls.filter_out_deny,tags)
             tags = filter(cls.filter_in_only,tags)
-            map(lambda t:tagList.append(t.word),tags)
-        
-        counter = Counter(tagList)
-        #print "the length of tagList is %d" % len(tagList)
+            #map(lambda t:cls.upsert(t,news.rank,tagMap),tags)
+            for tag in tags:
+                score = RECOMM_HALF_DESC/(1000-news.rank+int(RECOMM_HALF_DESC))
+                key = tag.word
 
-        hot_word_tube = counter.most_common(8)
+                if tagMap.has_key(key):
+                    tagMap[key] = score + tagMap[key]
+                else:
+                    tagMap[key] = score  
+                #print "[%d]the score for %s is %f" % (news.rank,key,tagMap[key])
+        #counter = Counter(tagList)
+        #print "the length of tagList is %d" % len(tagList)
+        hot_word_tube = sorted(tagMap.items(),key=lambda x:x[1],reverse=True)
+        #hot_word_tube = counter.most_common(8)
         #hot_words = [ str(x[0])+"/"+str(x[1]) for x in hot_word_tube]
-        hot_words = [ x[0] for x in hot_word_tube]
+        hot_words = [ x[0] for x in hot_word_tube[0:RECOMM_NUM]]
+        # for k,v in hot_word_tube:
+        #     print k,v
         return hot_words
+
 
     @classmethod
     def filter_out_deny(cls,tag):
