@@ -3,7 +3,7 @@ from datetime import date,timedelta
 from news.getqiu.search.context import ViewContext
 from news.models import Category
 
-def datefilter(queryset,start_time,end_time=date.today()):
+def datefilter(queryset,start_time=None,end_time=date.today()):
     """
     这个函数需要一个queryset和起始和结束的日期
     返回一个经过筛选的queryset
@@ -18,7 +18,8 @@ def categoryfilter(queryset,category):
     if category == 'all':
         return queryset
     else:
-        return queryset.filter(category__category=category)
+        #return queryset.filter(category__category=category)
+        return queryset.filter(section=category)
         
         
 class NewsFilter():

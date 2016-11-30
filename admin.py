@@ -3,14 +3,7 @@ from django.contrib import admin
 from django.forms.widgets import TextInput
 # Register your models here.
 from .models import *
-
-@admin.register(CrawlerTask,AccountType)
-class AuthorAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.ManyToManyField: {'widget': TextInput},
-    }    
-    list_per_page  = 20
-    exclude = ['news']    
+ 
 
 class TagsAdmin(admin.ModelAdmin):
     list_display = ('tag','included_items_num','search_times')
@@ -30,7 +23,10 @@ class NewsAdmin(admin.ModelAdmin):
     """
     list_display=('title','news_time','rank')
     list_per_page  = 20  
-    inlines = (ClickCountInline,)  
+    inlines = (ClickCountInline,)
+    #search_fields = ["=tags__tag",]
+    #ordering = []
+    #list_filter = ('news_time',"category__category")
     #exclude = ['news']
 
 admin.site.register(News,NewsAdmin)  
@@ -62,6 +58,8 @@ class SettingsAdmin(admin.ModelAdmin):
     """
     list_display=('key','option',"comment")
     list_per_page=30
+    search_fields = ["key",'comment']
+    ordering = []
 
 admin.site.register(Settings,SettingsAdmin)
 

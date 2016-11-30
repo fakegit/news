@@ -10,6 +10,7 @@ from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
 import urllib
 import random
 import datetime
+from datetime import timedelta
 import time
 from news.getqiu.search.filters.newsfilter  import NewsFilter
 from news.getqiu.search.filters.paginator import PageFilter
@@ -22,6 +23,7 @@ from ip2location.generator import IpGenerator
 from news.getqiu.statistics.count import ClickRecoder
 from ip2location.userdetail import RequestInfo
 #from django.db import connections
+from news.configure import getDaysRangeForSearchResult as daysrange
 
 
 class HomePage(TemplateView):
@@ -65,10 +67,10 @@ class SearchResult(TemplateView):
             category = request.GET.get('category','all')
             request_page = request.GET.get('page',1)
 
-            start_time = request.GET.get("start_time",datetime.date(2011,9,1))
+            start_time = request.GET.get("start_time",datetime.date.today()-timedelta(days=daysrange()))
             end_time = request.GET.get("end_time",datetime.date.today())
 
-            start_time = start_time if start_time else datetime.date(2011,9,1)
+            start_time = start_time if start_time else datetime.date.today()-timedelta(days=daysrange())
             end_time = end_time if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段

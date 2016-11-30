@@ -45,7 +45,7 @@ class NewsPipeline(object):
                 news_category = item.pop("category")
                 news_cover = self.find_cover_img(item['content'])
                 #字典拆分，直接填入；但是扩展性不好
-                newItem = News(cover=news_cover,**dict(item))
+                newItem = News(cover=news_cover,section=news_category,**dict(item))
                 #newItem.cover = news_cover
                 #save()存入数据库，newItem也就有了id
                 newItem.save()

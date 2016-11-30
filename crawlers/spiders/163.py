@@ -45,7 +45,7 @@ class NeteaseSpider(Spider):
     domain_category_map={
                         'money':'finacial','tech':'technology',
                         'ent':'entertainment','mobile':'mobile',
-                        'news':"Headline","sports":"sports","auto":"car","home":"home",
+                        'news':"headline","sports":"sports","auto":"car","home":"home",
                         'war':"military","discovery":"technology","digi":"electronic",
                         'lady':'lady',"edu":"education",'jiankang':'healthy','travel':'travel',
                         'all':'all','other':'other','house':'house'

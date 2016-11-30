@@ -10,6 +10,7 @@ class News(models.Model):
     news_url = models.URLField(verbose_name="新闻网页链接")
     content = RichTextField(verbose_name="新闻内容")
     #add a hash field to unique the news item
+    section = models.CharField(max_length=32,verbose_name="分类",default="headline")
     hash_digest = models.CharField(max_length=64,verbose_name="哈希摘要",unique=True)
     cover = models.CharField(max_length=512,verbose_name="封面",default="/static/news/image/newsCover.jpg")
     
@@ -17,7 +18,7 @@ class News(models.Model):
         verbose_name="新闻"
         verbose_name_plural=verbose_name
     def __unicode__(self):
-        return str(self.rank)+"-|_"+self.title
+        return str(1000-self.rank)+"-|_"+self.title
 
 class NewsStatistic(models.Model):
     news = models.OneToOneField(News,verbose_name="新闻")
@@ -52,49 +53,7 @@ class Category(models.Model):
         verbose_name_plural=verbose_name
     def __unicode__(self):
         return self.category    
-    
-class CrawlerTask(models.Model):
-    """
-        任务列表当中 如何去解析任务？
-    """
-    TASK_TYPE = (
-        ('1',"长期任务"),
-        ('0','一次性任务'),
-    )
-    
-    task_type = models.CharField(max_length=10,choices = TASK_TYPE,default='1',verbose_name="任务类型")
-    #url = models.URLField(verbose_name="目标URL地址")
-    execute_time = models.DateTimeField(verbose_name="执行时间")
-    account_type = models.ForeignKey('AccountType',verbose_name="帐号类型")
-    account = models.CharField(max_length = 128,default='get_site_info',verbose_name="监视帐号")
-    class Meta:
-        verbose_name="爬虫任务类表"
-        verbose_name_plural = verbose_name
-        
-    def __unicode__(self):
-        return self.account_type.account+"  "+self.account
-        
-class AccountType(models.Model):
-    
-    COMPLEX_LEVEL = (
-        ('0','随意爬取'),
-        ('1','需要登录'),
-        ('2','登录+验证码'),
-        ('3','验证码识别困难'),
-        ('4','登录机制复杂'),
-        ('5','需人工模式'),
-    )
-    account = models.CharField(max_length=128,verbose_name="账户类型")
-    complex_level = models.CharField(max_length=16,choices=COMPLEX_LEVEL,verbose_name="复杂度")
-    
-    class Meta:
-        verbose_name="支持网站"
-        verbose_name_plural = "支持网站"
-        
-    def __unicode__(self):
-        return self.account
-        
-        
+          
 
 class Suggestion(models.Model):
     visitor = models.GenericIPAddressField(verbose_name='建议者ip')

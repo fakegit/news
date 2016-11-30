@@ -155,22 +155,23 @@ class TagBasedSearch(TitleBasedEngine):
 
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
         # 在这个 没有排序过的queryset上做文章
-        #candidite = final_result.values("id")
+        candidite = [x[0] for x in final_result.values_list("id")]
         #News.objects.filter(id__in=News.object.filter(id__in=final_result))
         # within=Country.objects.filter(continent='Africa').values('mpoly')
-        # News.objects.filter(id__in=News.objects.filter(id__in=final_result)).order_by('-id','-news_time','-rank')
-        current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),
+        result = News.objects.filter(id__in=candidite).order_by('-id','-news_time','-rank')
+        current_view_context =  ViewContext(result,
                                             search_context,url_parameter_dict)
         #current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
     def filter_out(self,one_keyword_hash):
-        queryset_based_on_keyword_hash_exist = self.queryset.filter(tags__tag_hash=one_keyword_hash).exists()
-        if queryset_based_on_keyword_hash_exist:
+        #queryset_based_on_keyword_hash_exist = self.queryset.filter(tags__tag_hash=one_keyword_hash).exists()
+        #if queryset_based_on_keyword_hash_exist:
             #这里花了三条sql，减少到一条
-            Tags.objects.filter(tag_hash=one_keyword_hash).update(search_times=F('search_times') + 1)
+        Tags.objects.filter(tag_hash=one_keyword_hash).update(search_times=F('search_times') + 1)
             #inspect_sql()            
-        return True if queryset_based_on_keyword_hash_exist else False
+        #return True if queryset_based_on_keyword_hash_exist else False
+        return True
         
     def narrow_queryset(self,tmp_queryset,tag_hash):
         return tmp_queryset.filter(tags__tag_hash=tag_hash)
