@@ -2,6 +2,7 @@
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from news.getqiu.search.context import ViewContext
+from news.configure import getMaxCountForSearchResult as maxcount
 
 class PageFilter():
     def __init__(self,item_per_page,request_page=1):
@@ -17,7 +18,8 @@ class PageFilter():
         """
         
         paginator = Paginator(view_context.queryset,self.item_per_page)#设置每页10
-        paginator._count = 200 # 最多返回500个结果
+        #paginator._count = maxcount() # 最多返回500个结果
+        paginator._count = view_context.kargs.get("resultcount",maxcount())
         request_page_num = self.request_page
         total_item = paginator.count
         total_page = paginator.num_pages
@@ -46,6 +48,7 @@ class PageFilter():
             'prev_page':prev_page,
             'total_item':total_item,
             'total_page':total_page,
+            'ceiling_item_count':maxcount(),
             'pages_indexs':range(start_index,end_index+1)        
         },}
         

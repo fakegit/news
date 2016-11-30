@@ -11,6 +11,7 @@ from news.models import Tags
 from django.db import connection
 from news.getqiu.search import  conf
 from news.models import News
+from news.configure import getMaxCountForSearchResult as maxcount
 
 def print_dict(item):
     for key,value in item.items():
@@ -155,12 +156,12 @@ class TagBasedSearch(TitleBasedEngine):
 
         final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
         # 在这个 没有排序过的queryset上做文章
-        candidite = [x[0] for x in final_result.values_list("id")]
+        candidite = [x[0] for x in final_result[0:maxcount()].values_list("id")]
         #News.objects.filter(id__in=News.object.filter(id__in=final_result))
         # within=Country.objects.filter(continent='Africa').values('mpoly')
         result = News.objects.filter(id__in=candidite).order_by('-id','-news_time','-rank')
         current_view_context =  ViewContext(result,
-                                            search_context,url_parameter_dict)
+                                            search_context,url_parameter_dict,resultcount=len(candidite))
         #current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
