@@ -8,7 +8,7 @@ from collections import Counter
 import re
 from itertools import ifilter
 import datetime 
-from news.utils import getDBConfigure
+from news.configure import getDBConfigure
 
 utf8 = lambda s:s.encode("utf-8") if isinstance(s,unicode) else s 
 

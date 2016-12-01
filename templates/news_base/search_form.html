@@ -42,12 +42,14 @@
               
               <div class="form-group">
                   {{ search_form.start_time.label_tag }} <br>
-                  {{ search_form.start_time  }}
-                  <p class="help-block">最早的新闻开始于：2011-09-01</p>
+                  {# search_form.start_time  #}
+                  <input class="form-control " id="id_start_time" name="start_time" type="date" value={{news_start_date|date:"Y-m-d"}}>
+                  <p class="help-block">最早的新闻开始于：2015-10-01</p>
               </div>
               <div class="form-group">
                   {{ search_form.end_time.label_tag }} <br>
-                  {{ search_form.end_time  }}
+                  {# search_form.end_time  #}
+                  <input class="form-control" id="id_end_time" name="end_time" type="date" value={{news_end_date|date:"Y-m-d"}}>
                   {% now "Y-m-d" as today %}
                   <p class="help-block">最新的新闻截止于：{{ today }}</p>
               </div>

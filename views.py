@@ -25,7 +25,7 @@ from ip2location.userdetail import RequestInfo
 #from django.db import connections
 from news.configure import getDaysRangeForSearchResult as daysrange
 from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
-
+from news.utils import convert2date
 
 class HomePage(TemplateView):
     template_name = 'news/home_page.html'
@@ -81,8 +81,8 @@ class SearchResult(TemplateView):
             start_time = request.GET.get("start_time",datetime.date.today()-timedelta(days=daysrange()))
             end_time = request.GET.get("end_time",datetime.date.today())
 
-            start_time = start_time if start_time else datetime.date.today()-timedelta(days=daysrange())
-            end_time = end_time if end_time else datetime.date.today()
+            start_time = convert2date(start_time) if start_time else datetime.date.today()-timedelta(days=daysrange())
+            end_time = convert2date(end_time) if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段
             start_view_context = ViewContext(News.objects.only('title','news_time','rank','cover').all(),
@@ -94,9 +94,9 @@ class SearchResult(TemplateView):
                 PageFilter(10,request_page),
                 ]
             m = lambda context,_filter:_filter.execute(context) #这句话就是执行各个filter的接口
-            start_search_clock  = datetime.datetime.now()            
+            start_search_clock  = time.time()
             view_context = reduce(m,filter_list,start_view_context)
-            end_search_clock  = datetime.datetime.now()              
+            end_search_clock  = time.time()  
             #reduce 一把搞定！
             context = view_context.context
             context["search_elapsed_time"] = end_search_clock - start_search_clock

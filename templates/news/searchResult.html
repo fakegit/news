@@ -25,9 +25,15 @@
                 <p>&nbsp;</p>
 
                 <ol class="breadcrumb">
-                  <li>历经<font color="blue">{{ search_elapsed_time }}</font> </li>
+                  <li>搜索时间范围：</li>
+                  <li>开始：{{ news_start_date }}</li>
+                  <li>截止：{{ news_end_date }}</li>
+                </ol>
+
+                <ol class="breadcrumb">
+                  <li>历经<font color="blue">{{ search_elapsed_time }}秒</font> </li>
                   <li>
-                      找到
+                      在指定时间范围找到
                      <font color="blue">
                      {% if page_info.total_item < page_info.ceiling_item_count %}
                         {{page_info.total_item}}
@@ -39,11 +45,6 @@
                   </li>
                 </ol> 
 
-                <ol class="breadcrumb">
-                  <li>时间范围：</li>
-                  <li>开始：{{ news_start_date }}</li>
-                  <li>截止：{{ news_end_date }}</li>
-                </ol>
                                       
                 <ol class="breadcrumb">
                     <li>分类筛选：</li>

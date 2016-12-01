@@ -4,7 +4,7 @@ from django import template
 from news.getqiu.statistics.hotwords import HotWords
 from django.core.cache import cache
 from news.models import Settings
-from news.utils import getDBConfigure
+from news.configure import getDBConfigure
 register = template.Library()
 
 @register.inclusion_tag('news/hot_words_list.part.html',name='hotwords')

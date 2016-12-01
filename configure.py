@@ -8,8 +8,19 @@
  news module configure
 """ 
 #---------- code begins below -------
-from news.utils import getDBConfigure
 from django.core.cache import cache
+from news.models import Settings
+
+def getDBConfigure(key,default="0",type_=str):
+    """
+        get configured value from db.
+    """
+    try:
+        setting = Settings.objects.get(key=key)
+    except Settings.DoesNotExist:
+        setting = Settings(key=key,option=str(default))
+        setting.save()
+    return type_(setting.option)
 
 def getDaysRangeForSearchResult():
     """

@@ -3,19 +3,22 @@
 
 # author : "qiulimao"
 # email  : "qiulimao@getqiu.com"
-from news.models import Settings 
+
+import datetime
 """ 
  util tools
 """ 
 #---------- code begins below -------
 
-def getDBConfigure(key,default="0",type_=str):
+
+
+
+def convert2date(dtstr):
     """
-        get configured value from db.
+        将字符串时间转化为对象
     """
-    try:
-        setting = Settings.objects.get(key=key)
-    except Settings.DoesNotExist:
-        setting = Settings(key=key,option=str(default))
-        setting.save()
-    return type_(setting.option)
+    if isinstance(dtstr,datetime.date):
+        return dtstr
+    if isinstance(dtstr,datetime.datetime):
+        return dtstr.date()    
+    return datetime.datetime.strptime(dtstr, "%Y-%m-%d").date()
