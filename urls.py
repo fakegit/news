@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'suggestion/$',views.Suggestion.as_view(),name='suggestion'),
     url(r'redirecting/$',views.TransformPage.as_view(),name='transform'),
     url(r'about-us/$',views.AboutUs.as_view(),name='aboutus'),
+    url(r'delete-search-record/$',views.DeleteSearchRecord.as_view(),name='delete_search_record'),
 ]

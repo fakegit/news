@@ -20,7 +20,8 @@
 
 <script language="javascript" type="text/javascript">
 
-var total_second = 4
+var show_reason_seconds = 6;
+var total_second = show_reason_seconds;
 
 function Redirect(){
 		window.location.href="{% url 'news:home_page' %}"; 		
@@ -29,16 +30,16 @@ function Redirect(){
 function CountSecond(){
 	total_second = total_second - 1
 	if (total_second < 0){
-		total_second = 4
+		total_second = show_reason_seconds;
 		
 	}
 	var counter = new MessagePopover()
-	counter.show('#flash',"<font color='red'>"+total_second+"</font>之后自动跳转...<br>如跳转异常请点击<a href='/'>跳转</a>")
+	counter.show('#flash',"<font color='red'> {{reason}}<br/>"+total_second+"</font>之后自动跳转...<br>如跳转异常请点击<a href='/'>跳转</a>")
 }
 
 var talk = new MessagePopover({placement:"top"})
-talk.show('#flash',"已经收到您的建议，马上回去改进！<br>正在为您跳转");
-setTimeout('Redirect()',1000*4);
+talk.show('#flash',"{{reason}}<br>正在为您跳转");
+setTimeout('Redirect()',1000*show_reason_seconds);
 setInterval('CountSecond()',1000);
 
 

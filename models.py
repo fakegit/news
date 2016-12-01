@@ -1,6 +1,7 @@
 #-*-encoding:utf-8-*-
 from django.db import models
 from ckeditor.fields import RichTextField
+import datetime
 # Create your models here.
 class News(models.Model):
     title = models.CharField(max_length=128,verbose_name="新闻标题")
@@ -137,4 +138,56 @@ class HotWordTrace(models.Model):
         index_together = ("time","word","reliable")
 
     def __unicode__(self):
-        return self.word    
+        return self.word
+
+
+class SearchTrace(models.Model):
+    """
+    CREATE TABLE `news_searchtrace` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `expression` varchar(32) NOT NULL,
+    `time` datetime NOT NULL,
+    `day` date NOT NULL,
+    `ip` varchar(40) NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `index__time` (`time`),
+    KEY `index__ip__day` (`ip`,`day`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;     
+    """
+    expression = models.CharField(max_length=64,verbose_name="搜索表达式")
+    time = models.DateTimeField(auto_now=True,verbose_name="搜索时间",db_index=True)
+    day = models.DateField(auto_now=True,verbose_name="搜索日期")
+    ip = models.CharField(max_length=40,verbose_name="IP 地址")
+
+    @classmethod 
+    def getSearchTimeToday(cls,ip):
+        """
+            get search request times today
+        """
+        today = datetime.date.today()
+        requestTimes = cls.objects.filter(ip=ip,day=today).count()
+        return requestTimes
+    
+    @classmethod
+    def getSearchTimeInAll(cls,ip):
+        """
+            get search time in all
+        """
+        requestTimes = cls.objects.filter(ip=ip).count()
+        return requestTimes
+
+    @classmethod
+    def deleteOneDayAgo(cls):
+        """
+            删除一天以前的记录
+        """
+        yestoday = datetime.datetime.now() - datetime.timedelta(days=1)
+        return cls.objects.filter(time__lte=yestoday).delete()
+
+    class Meta:
+        verbose_name="searchTrace"
+        verbose_name_plural = verbose_name
+        index_together = ("ip","day")
+
+    def __unicode__(self):
+        return self.expression    

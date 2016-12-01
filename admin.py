@@ -72,3 +72,12 @@ class HotWordTraceAdmin(admin.ModelAdmin):
     list_per_page=30
 
 admin.site.register(HotWordTrace,HotWordTraceAdmin)
+
+
+class SearchTraceAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display=('ip','expression',"time")
+    list_per_page=30
+
+admin.site.register(SearchTrace,SearchTraceAdmin)

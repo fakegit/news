@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 # Create your views here.
 from django.core.urlresolvers import reverse
 from .forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm
-from .models import News
+from .models import News,SearchTrace
 from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
 #from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import urllib
@@ -24,6 +24,7 @@ from news.getqiu.statistics.count import ClickRecoder
 from ip2location.userdetail import RequestInfo
 #from django.db import connections
 from news.configure import getDaysRangeForSearchResult as daysrange
+from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
 
 
 class HomePage(TemplateView):
@@ -63,6 +64,16 @@ class SearchResult(TemplateView):
         if search_form.is_valid():
             #pass
             #这里应该添加实际的业务查询逻辑
+
+            ##
+            # request_info = RequestInfo(request)
+            ##
+            request_info = RequestInfo(request)
+
+            if banSpider():
+                if SearchTrace.getSearchTimeToday(request_info.ip) > getMaxSearchPerDay():
+                    return redirect(reverse('news:transform')+"?reason=%s" % "the fucking evil spider please get away.")
+            ######
             query_word = request.GET.get('search_word')
             category = request.GET.get('category','all')
             request_page = request.GET.get('page',1)
@@ -89,6 +100,19 @@ class SearchResult(TemplateView):
             #reduce 一把搞定！
             context = view_context.context
             context["search_elapsed_time"] = end_search_clock - start_search_clock
+
+
+            ##
+            #   处理记录逻辑
+            ##
+            if getSearchTrace():
+                
+                search_time_today = SearchTrace.getSearchTimeToday(request_info.ip)            
+                trace = SearchTrace(expression=query_word,ip=request_info.ip)
+                trace.save()
+                context["search_time_today"] = search_time_today
+            ######## END 记录逻辑  ###################
+
             return render(request,self.template_name,context)
             
         else:
@@ -120,7 +144,17 @@ class NewsInToday(TemplateView):
         }
         return render(request,self.template_name,context)
         
-        
+
+class DeleteSearchRecord(TemplateView):
+    """
+    """
+    def get(self,request):
+        """
+        """
+        SearchTrace.deleteOneDayAgo()
+        #return render(request,self.template_name,context=None)
+        return redirect(reverse('news:transform')+"?reason=%s" % "deleted outdated search record.")
+
 class AddCrawlerTask(TemplateView):
     template_name = 'news/add_crawler_task.html'
     
@@ -161,7 +195,7 @@ class Suggestion(TemplateView):
             new_suggestion.visitor = request_info.ip
             new_suggestion.save()
             context = {'form':suggestion_form}
-            return redirect(reverse('news:transform'))
+            return redirect(reverse('news:transform')+"?reason=%s" % "recieved your suggestion")
         else:
             context = {'form':suggestion_form}
             return render(request,self.template_name,context)
@@ -171,7 +205,9 @@ class TransformPage(TemplateView):
     template_name = 'news/redirecting.html'
     
     def get(self,request):
-        return render(request,self.template_name)        
+        reason = request.GET.get("reason"," ")
+        context = {"reason":reason}
+        return render(request,self.template_name,context)        
         
 
 

@@ -17,19 +17,28 @@
             <div class="page-header">
                  
                  <small>
-                     getqiu本次查询历经<font color="blue"> &nbsp;{{ search_elapsed_time }} &nbsp;</font>在搜索时间范围内找到
-                     <font color="blue"> &nbsp;
+                     <!-- 为您找到<font color="orange"> &nbsp;{{page_info.total_item}} &nbsp;</font>个相关结果 -->
+                     <!--
+                     当日搜索次数<font color="blue"> &nbsp; {{search_time_today|add:"1"}} </font>次
+                     -->
+                </small>
+                <p>&nbsp;</p>
+
+                <ol class="breadcrumb">
+                  <li>历经<font color="blue">{{ search_elapsed_time }}</font> </li>
+                  <li>
+                      找到
+                     <font color="blue">
                      {% if page_info.total_item < page_info.ceiling_item_count %}
                         {{page_info.total_item}}
                      {% else %}
                         超过{{page_info.ceiling_item_count}}
                      {% endif %}
-                     &nbsp;</font>
-                     条记录
-                     <!-- 为您找到<font color="orange"> &nbsp;{{page_info.total_item}} &nbsp;</font>个相关结果 -->
-                </small>
-                <p>&nbsp;</p>
-                
+                     </font>
+                     条相关结果
+                  </li>
+                </ol> 
+
                 <ol class="breadcrumb">
                   <li>时间范围：</li>
                   <li>开始：{{ news_start_date }}</li>
@@ -73,7 +82,7 @@
 
             </ul>
       
-
+            
          </div>
      </div>
 </div>

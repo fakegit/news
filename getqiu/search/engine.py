@@ -156,6 +156,7 @@ class TagBasedSearch(TitleBasedEngine):
             return current_view_context.merge(view_context)
 
         final_result = reduce(self.narrow_queryset,valid_word,self.queryset)
+        final_result = final_result.order_by("-news_time","-rank")
         # 在这个 没有排序过的queryset上做文章
         candidite = [x[0] for x in final_result[0:maxcount()].values_list("id")]
         #News.objects.filter(id__in=News.object.filter(id__in=final_result))
