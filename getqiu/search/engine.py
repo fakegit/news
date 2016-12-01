@@ -169,10 +169,10 @@ class TagBasedSearch(TitleBasedEngine):
         #queryset_based_on_keyword_hash_exist = self.queryset.filter(tags__tag_hash=one_keyword_hash).exists()
         #if queryset_based_on_keyword_hash_exist:
             #这里花了三条sql，减少到一条
-        Tags.objects.filter(tag_hash=one_keyword_hash).update(search_times=F('search_times') + 1)
+        updatedCount = Tags.objects.filter(tag_hash=one_keyword_hash).update(search_times=F('search_times') + 1)
             #inspect_sql()            
-        #return True if queryset_based_on_keyword_hash_exist else False
-        return True
+        return True if updatedCount else False
+        #return True
         
     def narrow_queryset(self,tmp_queryset,tag_hash):
         return tmp_queryset.filter(tags__tag_hash=tag_hash)

@@ -130,7 +130,7 @@ class HotWords():
                     note="using %s/(1+%s)" % (RECOMM_HALF_DESC,RECOMM_HALF_DESC) # for debug popurse
                     hotword = HotWordTrace(word=w[0],rank=i+1,score=w[1],note=note)
                     hotword.save()
-                except HotWordTrace.MultipleObjectsReturned
+                except HotWordTrace.MultipleObjectsReturned:
                     hotword = HotWordTrace.objects.only("id")\
                                           .filter(time=datetime.date.today(),word=w[0])
                     theSameId = [x[0] for x in hotword.values_list("id")[1:]]

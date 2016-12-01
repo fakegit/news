@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+           #!/usr/bin/env python
 #-*-coding:utf-8-*-
 
 # author : "qiulimao"
@@ -31,10 +31,6 @@ class Command(BaseCommand):
                 news = News.objects.only("id","section").get(id=newsid)
 
                 news_section = news.category_set.first().category
-                if utf8(news_section).startswith("headline"):
-                    newsid = newsid + 1
-                    dealedItemNumber = dealedItemNumber + 1
-                    continue
                 News.objects.filter(id=newsid).update(section=news_section)
                 self.stdout.write("<News %d>add section infomation" % news.id)
                 newsid = newsid + 1
