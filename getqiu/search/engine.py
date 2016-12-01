@@ -145,16 +145,17 @@ class TagBasedSearch(TitleBasedEngine):
             return current_view_context.merge(view_context)
 
         key_words = self.find_key_words(self.input_sting)
-        key_words_hash = map(lambda x:md5(x.encode('utf-8').lower()).hexdigest(),key_words)
-        valid_hash_list = filter(self.filter_out,key_words_hash)
+        #key_words_hash = map(lambda x:md5(x.encode('utf-8').lower()).hexdigest(),key_words)
+        #key_words = map(lambda x:md5(x.encode('utf-8').lower()).hexdigest(),key_words)
+        valid_word = filter(self.filter_out,key_words)
         
         search_context={'search_info':{'search_word':self.input_sting,'searched_words':key_words},}
         url_parameter_dict = {"search_word":self.input_sting}
-        if not valid_hash_list:
+        if not valid_word:
             current_view_context = ViewContext(self.queryset.none(),search_context,url_parameter_dict)
             return current_view_context.merge(view_context)
 
-        final_result = reduce(self.narrow_queryset,valid_hash_list,self.queryset)
+        final_result = reduce(self.narrow_queryset,valid_word,self.queryset)
         # 在这个 没有排序过的queryset上做文章
         candidite = [x[0] for x in final_result[0:maxcount()].values_list("id")]
         #News.objects.filter(id__in=News.object.filter(id__in=final_result))
@@ -165,17 +166,17 @@ class TagBasedSearch(TitleBasedEngine):
         #current_view_context =  ViewContext(final_result.order_by('-news_time','-rank'),search_context,url_parameter_dict)
         return current_view_context.merge(view_context)
         
-    def filter_out(self,one_keyword_hash):
+    def filter_out(self,one_keyword):
         #queryset_based_on_keyword_hash_exist = self.queryset.filter(tags__tag_hash=one_keyword_hash).exists()
         #if queryset_based_on_keyword_hash_exist:
             #这里花了三条sql，减少到一条
-        updatedCount = Tags.objects.filter(tag_hash=one_keyword_hash).update(search_times=F('search_times') + 1)
+        updatedCount = Tags.objects.filter(tag=one_keyword).update(search_times=F('search_times') + 1)
             #inspect_sql()            
         return True if updatedCount else False
         #return True
         
-    def narrow_queryset(self,tmp_queryset,tag_hash):
-        return tmp_queryset.filter(tags__tag_hash=tag_hash)
+    def narrow_queryset(self,tmp_queryset,tag):
+        return tmp_queryset.filter(tags__tag=tag)
         
     def find_key_words(self,input_sting):
         key_words = jieba.lcut(input_sting)
