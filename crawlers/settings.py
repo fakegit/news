@@ -58,7 +58,7 @@ LOG_FILE = os.path.join(TOP_DIR,"news","scrapy_log.log")
 #SPIDER_MIDDLEWARES = {
 #    'crawlers.middlewares.MyCustomSpiderMiddleware': 543,
 #}
-
+DOWNLOAD_TIMEOUT=10
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {

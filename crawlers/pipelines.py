@@ -35,8 +35,11 @@ class NewsPipeline(object):
         try:
             try:
                 item['hash_digest'] = md5(item["title"]+item["news_time"])
+                content = item["content"]
             except KeyError:
-                raise DropItem("@@@@@ give up this news")
+                #raise DropItem("@@@@@ give up this news")
+                logger.warning("@@@@ give up this item because of not enough infomation")
+                raise DropItem("NotEnoughInfomation")
                 
             try:
                 exist_news = News.objects.only('id','title').get(hash_digest=item['hash_digest'])
@@ -73,11 +76,10 @@ class NewsPipeline(object):
             except News.MultipleObjectsReturned:
                 logger.warning("-----MultipleObjectsReturned,delete the duplications")
                 News.objects.filter(news_url=item['title']).delete()
-                
-        except Exception,e:
-            logger.warning("xxxxxx error accoured on %s;skipped"%item['news_url'])
+     
+        except Exception as e:
+            logger.warning("xxxxxx [%s] accoured on %s"%(e,item['news_url']))
             #traceback.print_exc()
-            raise e
             
             
             

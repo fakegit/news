@@ -23,6 +23,7 @@
 									<div class="media-body">
 										<h4 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}</h4>
 										<h5>{{one_news.news_time}}</h5>
+										<h5>来自：{{one_news.publisher}}</h5>
 									</div>
 
                                 </li>
@@ -34,9 +35,7 @@
 							{{one_news.content|safe}}
 						</div>
 					<div class='panel-footer'>
-						<a href='http://www.163.com'>
-						本文转自网易新闻
-						</a>
+						{{one_news.news_url|urldomain}}
 					</div>						
 				</div>
                 <script>

@@ -34,6 +34,7 @@ admin.site.register(News,NewsAdmin)
 class CategoryAdmin(admin.ModelAdmin):
     """
     """
+    list_display=('category_name','category')
     exclude = ['news']
 
 admin.site.register(Category,CategoryAdmin) 

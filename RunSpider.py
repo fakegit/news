@@ -31,6 +31,7 @@ if __name__ == "__main__":
     #以后要自动运行的spider可以直接在cfg文件当中直接添加      
     process = CrawlerProcess(get_project_settings())
     process.crawl('163')
+    process.crawl('qq')
     #process.crawl('news_163')
     #process.crawl('finace_163')
     #process.crawl('tech_163')
