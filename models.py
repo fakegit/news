@@ -14,6 +14,7 @@ class News(models.Model):
     section = models.CharField(max_length=32,verbose_name="分类",default="headline")
     hash_digest = models.CharField(max_length=64,verbose_name="哈希摘要",unique=True)
     cover = models.CharField(max_length=512,verbose_name="封面",default="/static/news/image/newsCover.jpg")
+    site = models.CharField(max_length=32,verbose_name="新闻来源",default="getqiu.com")
     
     class Meta:
         verbose_name="新闻"

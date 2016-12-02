@@ -27,7 +27,7 @@ class NewsItem(scrapy.Item):
     news_url=scrapy.Field()
     content=scrapy.Field()
     hash_digest = scrapy.Field()
-    
+    site = scrapy.Field()
     category = scrapy.Field()
 
 

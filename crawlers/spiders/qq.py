@@ -115,6 +115,7 @@ class QqSpider(Spider):
         #     logger.warning("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
         
         news_loader.add_value('category',response.meta['category'])
+        news_loader.add_value("site",u"qq.com")
         #print response.xpath("//title/text()").extract()[0]
         return news_loader.load_item()
         

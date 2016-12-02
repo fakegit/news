@@ -115,5 +115,6 @@ class NeteaseSpider(Spider):
         
         news_loader.add_value('category',response.meta['category'])
         #print response.xpath("//title/text()").extract()[0]
+        news_loader.add_value("site",u"163.com")
         return news_loader.load_item()
         
