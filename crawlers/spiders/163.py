@@ -12,6 +12,9 @@ from crawlers.items import NewsItem
 import re
 import datetime
 from news.settings import RANK_SORT_PARAMETER
+import logging
+
+logger = logging.getLogger(__name__)
 
 class NeteaseSpider(Spider):
     """
@@ -89,12 +92,27 @@ class NeteaseSpider(Spider):
         """
         news_loader = NewsLoader(item=NewsItem(),response=response)
         #news_loader.add_css('title',"#h1title::text")
-        news_loader.add_xpath('title','/html/head/title/text()')
+        title = response.xpath("/html/head/title/text()").extract()
+        if title:
+            #news_loader.add_value("title",title)
+            news_loader.add_xpath('title','/html/head/title/text()')
+        else:
+            news_loader.add_xpath("title","//div[@id='epContentLeft']/h1/text()")
+            logger.warning("!!!! did't get title on head,parse <%s>'s body instead." % response.url)
+            
         news_loader.add_value('rank',str(response.meta['rank']))
         news_loader.add_value('news_time',response.meta['news_time'])
         news_loader.add_css('publisher',"#ne_article_source::text")
         news_loader.add_value("news_url",response.url)
-        news_loader.add_xpath('content',"//div[@id='endText']/p[not(style)]")
+
+
+        content = response.xpath("//div[@id='endText']/p[not(style)]").extract()
+        if content:
+            news_loader.add_xpath('content',"//div[@id='endText']/p[not(style)]")
+        else:
+            news_loader.add_xpath("content","//div[@class='w_text']")
+            logger.warning("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
+        
         news_loader.add_value('category',response.meta['category'])
         #print response.xpath("//title/text()").extract()[0]
         return news_loader.load_item()

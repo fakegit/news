@@ -10,9 +10,14 @@ import logging
 import re
 import datetime
 #from datetime.date import today
-from hashlib import md5
 from news.getqiu.search.createtag import AddTag
 import lxml.html
+from news.utils import md5,utf8
+import traceback
+
+logger = logging.getLogger(__name__)
+
+
 
 class NewsPipeline(object):
     
@@ -29,17 +34,15 @@ class NewsPipeline(object):
     def process_item(self,item,spider):
         try:
             try:
-
-            #item['hash_digest'] = md5(item['title'].encode('utf-8')+item.get('news_time',str(datetime.date.today())).encode('utf-8')).hexdigest()
-                item['hash_digest'] = md5(item['title'].encode('utf-8')+item['news_time'].encode('utf-8')).hexdigest()
+                item['hash_digest'] = md5(item["title"]+item["news_time"])
             except KeyError:
-                raise DropItem("give up this news")
+                raise DropItem("@@@@@ give up this news")
                 
             try:
                 exist_news = News.objects.only('id','title').get(hash_digest=item['hash_digest'])
                 #tag_adder=AddTag(exist_news,'title')
                 #tag_adder.save()#老新闻还是检查一边，虽然没必要                
-                logging.info("the news  %s is in the category(%s)"%(item['title'],item['category']))
+                #logger.info("|||||| [%s] the news  %s"%(item['category'],item['title']))
             except News.DoesNotExist:
                 #category 字段是在页面内容提取当中出现，不存放在news表中，故pop
                 news_category = item.pop("category")
@@ -64,17 +67,16 @@ class NewsPipeline(object):
                 tag_adder=AddTag(newItem,'title')
                 tag_adder.save()#完成添加tag功能
                     
-                    
-                
-                logging.info("saved the news %s in %s <<<<"%(item['title'],news_category))
+                logger.info("++++++ [%s] the news %s"%(news_category,item['title']))
                 
                 
             except News.MultipleObjectsReturned:
-                logging.warning("MultipleObjectsReturned,delete the duplications>>>")
+                logger.warning("-----MultipleObjectsReturned,delete the duplications")
                 News.objects.filter(news_url=item['title']).delete()
                 
         except Exception,e:
-            logging.warning("error accoured on %s;skipped"%item['news_url'])
+            logger.warning("xxxxxx error accoured on %s;skipped"%item['news_url'])
+            #traceback.print_exc()
             raise e
             
             
