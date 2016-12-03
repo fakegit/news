@@ -98,7 +98,7 @@ class NeteaseSpider(Spider):
             news_loader.add_xpath('title','/html/head/title/text()')
         else:
             news_loader.add_xpath("title","//div[@id='epContentLeft']/h1/text()")
-            logger.warning("!!!! did't get title on head,parse <%s>'s body instead." % response.url)
+            logger.debug("!!!! did't get title on head,parse <%s>'s body instead." % response.url)
             
         news_loader.add_value('rank',str(response.meta['rank']))
         news_loader.add_value('news_time',response.meta['news_time'])
@@ -111,7 +111,7 @@ class NeteaseSpider(Spider):
             news_loader.add_xpath('content',"//div[@id='endText']/p[not(style)]")
         else:
             news_loader.add_xpath("content","//div[@class='w_text']")
-            logger.warning("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
+            logger.debug("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
         
         news_loader.add_value('category',response.meta['category'])
         #print response.xpath("//title/text()").extract()[0]

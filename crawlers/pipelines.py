@@ -38,7 +38,7 @@ class NewsPipeline(object):
                 content = item["content"]
             except KeyError:
                 #raise DropItem("@@@@@ give up this news")
-                logger.warning("@@@@ give up this item because of not enough infomation")
+                logger.debug("@@@@ give up this item because of not enough infomation")
                 raise DropItem("NotEnoughInfomation")
                 
             try:

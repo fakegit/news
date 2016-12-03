@@ -107,7 +107,7 @@ class HotWords():
             tags = filter(cls.filter_in_only,tags)
             #map(lambda t:cls.upsert(t,news.rank,tagMap),tags)
             for tag in tags:
-                score = RECOMM_HALF_DESC/(1000-news["rank"]+int(RECOMM_HALF_DESC))
+                score = RECOMM_HALF_DESC/(RANK_SORT_PARAMETER-news["rank"]+int(RECOMM_HALF_DESC))
                 key = tag.word
 
                 if tagMap.has_key(key):
