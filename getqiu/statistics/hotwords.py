@@ -9,6 +9,7 @@ import re
 from itertools import ifilter
 import datetime 
 from news.configure import getDBConfigure
+from news.settings import RANK_SORT_PARAMETER
 
 utf8 = lambda s:s.encode("utf-8") if isinstance(s,unicode) else s 
 
@@ -76,7 +77,8 @@ class HotWords():
         RECOMM_DAYS = getDBConfigure("RECOMM_DAYS",default=2,type_=int)
         RECOMM_RANK_GT = getDBConfigure("RECOMM_RANK_GT",default=200,type_=int)
 
-        RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
+        #RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
+        RECOMM_NEWSLIMIT = getDBConfigure("RECOMM_NEWSLIMIT",default=400,type_=int)
 
         RECOMM_HALF_DESC = getDBConfigure("RECOMM_HALF_DESC",default="30.0",type_=float)
         RECOMM_NUM = getDBConfigure("RECOMM_NUM",default=8,type_=int)
@@ -91,9 +93,9 @@ class HotWords():
         today = datetime.date.today()
         oneday = datetime.timedelta(days=RECOMM_DAYS) 
         yesterday=today - oneday         
-        recent_news = News.objects.filter(news_time__gte=yesterday,news_time__lte=today,rank__gt=(1000-200))\
+        recent_news = News.objects.filter(news_time__gte=yesterday,news_time__lte=today,rank__gt=(RANK_SORT_PARAMETER-RECOMM_RANK_GT))\
                                   .only("title")\
-                                  .order_by("-news_time").all()[0:RECOMM_NEWSLIMIT]
+                                  .order_by("-news_time","-rank").all()[0:RECOMM_NEWSLIMIT]
         #tagList = []
         tagMap = dict()
         for news in recent_news:
