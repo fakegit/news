@@ -26,6 +26,7 @@ from ip2location.userdetail import RequestInfo
 from news.configure import getDaysRangeForSearchResult as daysrange
 from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
 from news.utils import convert2date
+from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
 
 class HomePage(TemplateView):
     template_name = 'news/home_page.html'
@@ -45,7 +46,7 @@ class HomePage(TemplateView):
         ##
         today = datetime.date.today()
         news_today = News.objects.only('title','hash_digest')\
-                                 .filter(news_time=today,rank__gte=999)
+                                 .filter(news_time=today,rank__gte=999)[0:MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE]
 
         context = {'ip_info':ip_info.values(),"search_form":SearchBoxForm(),"news_today":news_today}
 
@@ -85,7 +86,7 @@ class SearchResult(TemplateView):
             end_time = convert2date(end_time) if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','news_time','rank','cover').all(),
+            start_view_context = ViewContext(News.objects.only('title','news_time','rank','cover',"news_url").all(),
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
                                              {})
             filter_list = [
@@ -137,7 +138,7 @@ class NewsInToday(TemplateView):
     def get(self,request):
         """ """
         today = datetime.date.today()
-        news_today = News.objects.only('title','news_time','rank','cover','content')\
+        news_today = News.objects.only('title','news_time','rank','cover','content',"news_url")\
                                  .filter(news_time=today,rank__gte=997).order_by("-rank")
         context = {
             "news":news_today,

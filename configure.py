@@ -22,13 +22,23 @@ def getDBConfigure(key,default="0",type_=str):
         setting.save()
     return type_(setting.option)
 
+def durationOfSettings():
+    """
+        配置有效时间，过期之后才会读取新设置的值,最小的粒度为 60s
+    """
+    if not cache.get("DurationOfSettings"):
+        DurationOfSettings = getDBConfigure("DURATION_OF_SETTINGS",60,type_=int)
+        cache.set("DurationOfSettings",DurationOfSettings,60)
+    return cache.get("DurationOfSettings")
+
+
 def getDaysRangeForSearchResult():
     """
         默认搜索时间范围(最近30天)
     """
     if not cache.get("DaysRangeForSearchResult"):
         DaysRangeForSearchResult = getDBConfigure("DAYS_RANGE_FOR_SEARCH_RESULT",30,type_=int)
-        DaysRangeCacheLife = getDBConfigure("DAYS_RANGE_CACHE_LIFE",24*60*60,type_=int)
+        DaysRangeCacheLife = durationOfSettings()
         cache.set("DaysRangeForSearchResult",DaysRangeForSearchResult,DaysRangeCacheLife)
     return cache.get("DaysRangeForSearchResult")
 
@@ -38,7 +48,7 @@ def getMaxCountForSearchResult():
     """
     if not cache.get("MaxCountForSearchResult"):
         MaxCountForSearchResult = getDBConfigure("SEARCH_RESULT_MAX_COUNT",200,type_=int)
-        MaxResultCountCacheLife = getDBConfigure("MAX_RESULT_COUNT_CACHE_LIFE",24*60*60,type_=int)
+        MaxResultCountCacheLife = durationOfSettings()
         cache.set("MaxCountForSearchResult",MaxCountForSearchResult,MaxResultCountCacheLife)
     return cache.get("MaxCountForSearchResult")
 
@@ -49,7 +59,7 @@ def getSearchTrace():
     """
     if not cache.get("SearchTrace"):
         SearchTrace = getDBConfigure("SEARCH_TRACE",default="1",type_=lambda x:bool(int(x)))
-        MaxSearchTraceCacheLife = getDBConfigure("SEARCH_TRACE_CACHE_LIFE",60,type_=int)
+        MaxSearchTraceCacheLife = durationOfSettings()
         cache.set("SearchTrace",SearchTrace,MaxSearchTraceCacheLife)
     return cache.get("SearchTrace")
 
@@ -59,7 +69,7 @@ def banSpider():
     """
     if not cache.get("BanSpider"):
         BanSpider = getDBConfigure("BAN_SPIDER",default="0",type_=lambda x:bool(int(x)))
-        MaxBanSpiderCacheLife = getDBConfigure("BAN_SPIDER_CACHE_LIFE",60,type_=int)
+        MaxBanSpiderCacheLife = durationOfSettings()
         cache.set("BanSpider",BanSpider,MaxBanSpiderCacheLife)
     return cache.get("BanSpider")
 
@@ -69,6 +79,6 @@ def getMaxSearchPerDay():
     """
     if not cache.get("MaxSearchPerDay"):
         MaxSearchPerDay = getDBConfigure("MAX_SEARCH_PER_DAY",default=399,type_=int)
-        MaxMaxSearchPerDayCacheLife = getDBConfigure("MAX_SEARCH_PER_DAY_CACHE_LIFE",60,type_=int)
+        MaxMaxSearchPerDayCacheLife = durationOfSettings()
         cache.set("MaxSearchPerDay",MaxSearchPerDay,MaxMaxSearchPerDayCacheLife)
     return cache.get("MaxSearchPerDay")

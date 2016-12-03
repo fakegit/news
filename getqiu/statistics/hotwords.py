@@ -70,7 +70,7 @@ class HotWords():
         #   RECOMM_NEWSLIMIT = RECOMM_DAYS * RECOMM_RANK_GT
         #   RECOMM_HALF_DESC = 30
         #   RECOMM_NUM = 8
-        #   
+        #   这里的配置不用设置缓存时间，每次直接实时读数据库就好
         ##
  
         RECOMM_DAYS = getDBConfigure("RECOMM_DAYS",default=2,type_=int)

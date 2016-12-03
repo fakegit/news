@@ -17,13 +17,26 @@ def addplaceholder(value,arg):
 
 @register.filter(name="adjustrank")
 def adjustrank(value):
+	"""
+		调整rank显示值
+	"""
 	return RANK_SORT_PARAMETER-value
 
 @register.filter(name="urldomain")
 def urldomain(value):
+	"""
+		根据url得到域名
+	"""
 	domainRegex = r"https?://(?P<domain>([a-z0-9\-]+\.)+(com|cn))"
 	domain = re.search(domainRegex,value)
 	if domain:
 		return domain.group("domain")
 	else:
 		return "getqiu.com"
+
+@register.filter(name="sec2millis")
+def sec2millis(value,digit=3):
+	"""
+	 将秒转化为毫秒,并精确小数点位数
+	"""
+	return round(value*1000,int(digit))

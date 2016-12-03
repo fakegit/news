@@ -31,7 +31,7 @@
                             </a>
                         </h4>
                         <h5 class="media-heading">发布时间：{{one_news.news_time}}</h5>
-                        <h5 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}</h5>
+                        <h5 class="media-heading">新闻位置：{{one_news.rank|adjustrank}}<small>【来自:{{one_news.news_url|urldomain}}】</small></h5>
                         <h5 class="media-heading">摘要:{{ one_news.content|striptags|truncatechars:60|wordwrap:20 }}</h5>            
                       </div>
                     </li>
