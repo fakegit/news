@@ -95,11 +95,11 @@ class HotWords():
         yesterday=today - oneday         
         recent_news = News.objects.filter(news_time__gte=yesterday,news_time__lte=today,rank__gt=(RANK_SORT_PARAMETER-RECOMM_RANK_GT))\
                                   .only("title")\
-                                  .order_by("-news_time","-rank").all()[0:RECOMM_NEWSLIMIT]
+                                  .order_by("-news_time","-rank")[0:RECOMM_NEWSLIMIT]
         #tagList = []
         tagMap = dict()
-        for news in recent_news:
-            tags = jieba.posseg.cut(news.title)
+        for news in recent_news.values("id","title","rank"):
+            tags = jieba.posseg.cut(news["title"])
             tags = filter(cls.filter_out_short,tags)
             #tags = filter(cls.filter_out_verb,tags)
             tags = filter(cls.filter_out_number,tags)
@@ -107,7 +107,7 @@ class HotWords():
             tags = filter(cls.filter_in_only,tags)
             #map(lambda t:cls.upsert(t,news.rank,tagMap),tags)
             for tag in tags:
-                score = RECOMM_HALF_DESC/(1000-news.rank+int(RECOMM_HALF_DESC))
+                score = RECOMM_HALF_DESC/(1000-news["rank"]+int(RECOMM_HALF_DESC))
                 key = tag.word
 
                 if tagMap.has_key(key):
