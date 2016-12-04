@@ -41,3 +41,7 @@ def utf8(string):
         return six.text_type(string).encode('utf8')
 
 md5 = lambda x: hashlib.md5(utf8(x)).hexdigest()
+
+
+def time2str(time_):
+    return time_.strftime("%Y-%m-%d")

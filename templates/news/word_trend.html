@@ -1,0 +1,97 @@
+{% extends 'news_base/skeleton.html' %}
+{% block head_block %}
+	<title>事物发展趋势图</title> 
+	<meta name="keywords" content="getqiu,关于我们">
+	<meta name="description" content="getqiu新闻检索系统关于我们">
+    <style>
+        .white-text{color:#FFF!important}
+    </style>
+    <script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+{% endblock %}
+
+
+{% block main_body %}
+
+<div id="paint-container" style="min-width:400px;height:400px;"></div>
+<div class="message"></div>
+
+<script>
+
+$(function(){
+
+    $.getJson("/word-trend-api/?search_word=中国",function(trenddata){
+        $("#paint-container").highcharts({
+            data:{
+                csv:trenddata
+            },
+            title:{
+                text:"当前搜索词语趋势图"
+            },
+            subtitle:{
+                text:"getqiu分析"
+            },
+            xAxis:{
+                tickInterval:24*3600*1000, //一天
+                tickWidth:0,
+                gridLineWidth:1,
+                labels:{
+                    align:"left",
+                    x:3,
+                    y:-3,
+                }
+            },
+            yAxis:[{
+                title:{
+                    text:null
+                },
+                labels:{
+                    align:"left",
+                    x:3,
+                    y:16,
+                    format:'{value:.,of}'
+                },
+                showFirstLabel:false
+            },{
+                //right y axis
+            }],
+            legend:{
+                align:"left",
+                verticalAlign:"top",
+                y:20,
+                floating:true,
+                borderWidth:0
+            },
+            tooltip:{
+                shared:true,
+                crosshairs:true
+            },
+            plotOptions:{
+                series:{
+                    cursor:"pointer",
+                    point:{
+                        events:{
+                            click:function(e){
+                                $(".message").html(Highchars.dateFormat("%Y-%m-%d",this.x)+"<br/>"+this.y);
+                            }
+                        }
+                    },
+                    marker:{
+                        lineWidth:1
+                    }
+                }
+            },
+            series:[{
+                name:"All visits",
+                lineWidth:4,
+                marker:{
+                    radius:4
+                },{
+                    name:"new visitors"
+                }
+            }]
+        });
+    });
+});
+
+</script>
+{% endblock %}

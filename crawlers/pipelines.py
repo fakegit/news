@@ -62,7 +62,7 @@ class NewsPipeline(object):
                     category_object.news.add(newItem)
                 except Category.DoesNotExist:
                     #分类不存在的情况下
-                    category_object = Category(category=news_category)
+                    category_object = Category(category=news_category,category_name=news_category)
                     category_object.save()
                     category_object.news.add(newItem)
                 #这个动作完了后，可以加入拆词功能

@@ -2,6 +2,7 @@
 from django.db import models
 from ckeditor.fields import RichTextField
 import datetime
+from news.settings import RANK_SORT_PARAMETER
 # Create your models here.
 class News(models.Model):
     title = models.CharField(max_length=128,verbose_name="新闻标题")
@@ -19,8 +20,9 @@ class News(models.Model):
     class Meta:
         verbose_name="新闻"
         verbose_name_plural=verbose_name
+        index_together = (("id","news_time","rank"),("section","news_time","rank"),("news_time","rank"))
     def __unicode__(self):
-        return str(1000-self.rank)+"-|_"+self.title
+        return u"["+unicode(RANK_SORT_PARAMETER-self.rank)+u"]"+self.title
 
 class NewsStatistic(models.Model):
     news = models.OneToOneField(News,verbose_name="新闻")
@@ -30,7 +32,22 @@ class NewsStatistic(models.Model):
         verbose_name="新闻信息统计"
         verbose_name_plural=verbose_name
     def __unicode__(self):
-        return "("+str(self.click)+")"+self.news.title    
+        return u"("+unicode(self.click)+u")"+self.news.title    
+
+class TagsNews(models.Model):
+    """
+     tags 和news 的关系表
+    """
+    news = models.ForeignKey("News",verbose_name="新闻",on_delete=models.CASCADE)
+    tags = models.ForeignKey("Tags",verbose_name="标签",on_delete=models.CASCADE)
+    class Meta:
+        verbose_name="新闻与标签关系"
+        verbose_name_plural = verbose_name
+        unique_together = ("news","tags")
+        db_table="news_tags_news" # backward capacity
+    
+    def __unicode__(self):
+        return unicode(self.id)     
 
 class Tags(models.Model):
     tag = models.CharField(max_length=32,verbose_name="标签")
@@ -38,7 +55,7 @@ class Tags(models.Model):
     search_times = models.IntegerField(default=0,verbose_name="搜索次数")
     included_items_num = models.IntegerField(default=0,verbose_name="tag所含条目数量")
     #included_items_num其实没必要要。
-    news = models.ManyToManyField(News,verbose_name="关联内容")
+    news = models.ManyToManyField(News,through="TagsNews",through_fields=("tags","news"),verbose_name="关联内容")
     class Meta:
         verbose_name="标签"
         verbose_name_plural=verbose_name

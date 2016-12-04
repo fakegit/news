@@ -6,7 +6,7 @@ from django.db.models import F
 from hashlib import md5
 import re
 from news.getqiu.search import  conf
-
+from news.models import TagsNews
 
 class AddTag():
     """
@@ -36,7 +36,10 @@ class AddTag():
         tags = filter(self.pickout_words,set(tags_iteral))
         #map(self.__connect_tag_with_object,tags)
         tags_objects = map(self.__create_tag_object,tags)
-        self.model_object.tags_set.add(*tags_objects)
+        #self.model_object.tags_set.add(*tags_objects)
+        TagsNews.objects.bulk_create([
+            TagsNews(news=self.model_object,tags=t) for t in tags_objects
+        ])
         #return self.model_object
         #礼尚往来，返回一个model_object把，目前不知道会有什么作用
         
@@ -76,18 +79,18 @@ class AddTag():
             
         return tag_object
         
-    def __connect_tag_with_object(self,a_tag):
-        #save_a_tag 
-        a_tag_object = self.__create_tag_object(a_tag)
-        if self.model_object.tags_set.filter(id=a_tag_object.id).exists():
-            pass
-        else:
-            a_tag_object.included_items_num = a_tag_object.included_items_num + 1
-            a_tag_object.save()        
-            #a_tag_object.news.add(self.model_object)
-            #优化的部分主要在这里，要不考虑多个tag一次性加入，可能会减少数据库hit
-            self.model_object.tags_set.add(a_tag_object)
-        return 1
+    # def __connect_tag_with_object(self,a_tag):
+    #     #save_a_tag 
+    #     a_tag_object = self.__create_tag_object(a_tag)
+    #     if self.model_object.tags_set.filter(id=a_tag_object.id).exists():
+    #         pass
+    #     else:
+    #         a_tag_object.included_items_num = a_tag_object.included_items_num + 1
+    #         a_tag_object.save()        
+    #         #a_tag_object.news.add(self.model_object)
+    #         #优化的部分主要在这里，要不考虑多个tag一次性加入，可能会减少数据库hit
+    #         self.model_object.tags_set.add(a_tag_object)
+    #     return 1
         
         
         

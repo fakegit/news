@@ -1,32 +1,36 @@
 #-*-coding:utf-8-*-
-from django.shortcuts import render,redirect
-from django.views.generic.base import TemplateView
-# Create your views here.
-from django.core.urlresolvers import reverse
-from .forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm
-from .models import News,SearchTrace
-from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
-#from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import urllib
 import random
 import datetime
-from datetime import timedelta
 import time
+from datetime import timedelta
+
+
+from django.shortcuts import render,redirect
+from django.views.generic.base import TemplateView
+from django.core.urlresolvers import reverse
+from django.db.models import Count,Avg,Sum
+from django.http import HttpResponse,JsonResponse
+
+from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm
+from news.models import News,SearchTrace
 from news.getqiu.search.filters.newsfilter  import NewsFilter
 from news.getqiu.search.filters.paginator import PageFilter
-#from django.http import QueryDict
 from news.getqiu.search.context import ViewContext    
-#from ip2location.models import Visitors,Ip2Location
+from news.getqiu.statistics.count import ClickRecoder
+from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
+
+from news.configure import getDaysRangeForSearchResult as daysrange
+from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
+
+from news.utils import convert2date,time2str
+from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
+
+
 from ip2location.ipresolver import Resolver
 from ip2location.recoder import VisitorRecoder
 from ip2location.generator import IpGenerator
-from news.getqiu.statistics.count import ClickRecoder
 from ip2location.userdetail import RequestInfo
-#from django.db import connections
-from news.configure import getDaysRangeForSearchResult as daysrange
-from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
-from news.utils import convert2date
-from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
 
 class HomePage(TemplateView):
     template_name = 'news/home_page.html'
@@ -129,7 +133,37 @@ class SearchResult(TemplateView):
             
         else:
             return redirect(reverse('news:home_page'))
-            
+
+class WordTrendAPI(TemplateView):
+    """
+        词语趋势分析源数据
+    """
+    def get(self,request):
+        query_word = request.GET.get('q',"韩国")
+        start_time = request.GET.get("start",datetime.date.today()-timedelta(days=daysrange()))
+        end_time = request.GET.get("end",datetime.date.today())  
+
+        start_time = convert2date(start_time) if start_time else datetime.date.today()-timedelta(days=daysrange())
+        end_time = convert2date(end_time) if end_time else datetime.date.today()              
+
+        word_trend = News.objects\
+                         .filter(news_time__gte=start_time,news_time__lte=end_time)\
+                         .order_by("news_time")\
+                         .values("news_time")\
+                         .annotate(n=Count("news_time"))
+
+        word_trend = [{"time":time2str(d["news_time"]),"count":d["n"]} for d in word_trend]
+        return JsonResponse(word_trend,safe=False)
+
+class WordTrend(TemplateView):
+    """
+        词语趋势展示图
+    """
+    template_name = "news/word_trend.html"
+    def get(self,request):
+
+        return render(request,self.template_name,context = {})
+
 class NewsInToday(TemplateView):
     """
         provide with today's news

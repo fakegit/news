@@ -4,6 +4,8 @@ from django.forms.widgets import TextInput
 # Register your models here.
 from .models import *
  
+admin.sites.AdminSite.site_header="getqiu"
+admin.sites.AdminSite.site_title="getqiu站点管理"
 
 class TagsAdmin(admin.ModelAdmin):
     list_display = ('tag','included_items_num','search_times')

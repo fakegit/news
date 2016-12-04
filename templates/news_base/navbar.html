@@ -7,6 +7,7 @@
 
 ************************导航条开始*****************************-->
 <nav id = 'nav_header' class="navbar navbar-default" role="navigation">
+  <div class="container">
 <script type='text/javascript'>
    var nav_type = 1;
    //这段代码控制是否nav-bar-fixed-top body的显示margin问题
@@ -51,7 +52,7 @@
           <li><a href="{% url 'news:suggestion' %}">要不去提个建议?</a></li>
         </ul>
       </li>
-      <li ><a href="/news/news-today/">
+      <li ><a href="{% url 'news:news_today' %}">
           <span class="glyphicon glyphicon-info-sign"></span><font id="focuson">今日头条</font>
                <span class="badge" style="background-color:red;">
                   1
@@ -86,6 +87,7 @@
     </ul>
 
   </div><!-- /.navbar-collapse -->
+  </div>
 </nav>
 <!--*************************导航条结束******************************-->
  
