@@ -3,6 +3,9 @@ import os
 from os.path import dirname
 import sys
 from django.core.wsgi import get_wsgi_application
+import jieba
+
+
 TOP_DIR = dirname(dirname(dirname(os.path.abspath(__file__))))
 #django_path = os.path.join(TOP_DIR,"InfoCollector")
 django_path=TOP_DIR
@@ -17,6 +20,12 @@ application = get_wsgi_application()
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+####
+#
+####
+#jieba.load_userdict("")
+from news.utils import build_user_dict
+jieba.load_userdict(build_user_dict())
 
 BOT_NAME = 'GetqiuSpider'
 

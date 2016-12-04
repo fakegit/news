@@ -209,3 +209,26 @@ class SearchTrace(models.Model):
 
     def __unicode__(self):
         return self.expression    
+
+
+
+class Vocabulary(models.Model):
+    """
+    CREATE TABLE `news_vocabulary` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `word` varchar(16) NOT NULL,
+    `frequency` int(11) NOT NULL default '2',
+    `characteristic` varchar(8) NOT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;     
+    """
+    word = models.CharField(max_length="16",verbose_name="词语")
+    frequency = models.IntegerField(verbose_name="词频",default=2)
+    characteristic = models.CharField(max_length=8,verbose_name="词性")
+
+    class Meta:
+        verbose_name="自定义词典"
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.word 

@@ -152,7 +152,8 @@ class TagBasedSearch(TitleBasedEngine):
         search_context={'search_info':{'search_word':self.input_sting,'searched_words':key_words},}
         url_parameter_dict = {"search_word":self.input_sting}
         if not valid_word:
-            current_view_context = ViewContext(self.queryset.none(),search_context,url_parameter_dict)
+            current_view_context = ViewContext(self.queryset.none(),search_context,
+                                               url_parameter_dict,resultcount=0)
             return current_view_context.merge(view_context)
 
         final_result = reduce(self.narrow_queryset,valid_word,self.queryset)

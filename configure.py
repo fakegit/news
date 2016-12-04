@@ -22,6 +22,18 @@ def getDBConfigure(key,default="0",type_=str):
         setting.save()
     return type_(setting.option)
 
+def setDBConfigure(key,option):
+    """
+        set configure value in db
+    """
+    try:
+        setting = Settings.objects.get(key=key)
+        setting.option = str(option)
+        setting.save()
+    except Settings.DoesNotExist:
+        setting = Settings(key=key,option=str(option))
+        setting.save()     
+
 def durationOfSettings():
     """
         配置有效时间，过期之后才会读取新设置的值,最小的粒度为 60s

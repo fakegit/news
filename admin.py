@@ -84,3 +84,11 @@ class SearchTraceAdmin(admin.ModelAdmin):
     list_per_page=30
 
 admin.site.register(SearchTrace,SearchTraceAdmin)
+
+class VocabularyAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display=('word','frequency',"characteristic")
+    list_per_page=30
+
+admin.site.register(Vocabulary,VocabularyAdmin)

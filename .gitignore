@@ -1,3 +1,4 @@
 *.pyc
 *.log
+userdict.txt
 runtimelog/
