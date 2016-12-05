@@ -2,6 +2,9 @@
 from django.conf.urls import include, url
 from . import views
 
+import jieba
+from news.utils import build_user_dict
+
 urlpatterns = [
     url(r'^$',views.HomePage.as_view(),name="home_page"),
     url(r'^search/$',views.SearchResult.as_view(),name="search_result"),
@@ -15,3 +18,8 @@ urlpatterns = [
     url(r'about-us/$',views.AboutUs.as_view(),name='aboutus'),
     url(r'delete-search-record/$',views.DeleteSearchRecord.as_view(),name='delete_search_record'),
 ]
+
+##
+# 启动的时候就重新装载新的字典
+##
+jieba.load_userdict(build_user_dict())

@@ -214,7 +214,7 @@ class SearchTrace(models.Model):
 
 class Vocabulary(models.Model):
     """
-    Create Table: CREATE TABLE `news_vocabulary` (
+    CREATE TABLE `news_vocabulary` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `word` varchar(16) NOT NULL,
     `frequency` int(11) DEFAULT NULL,
