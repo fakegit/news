@@ -41,3 +41,7 @@ class TimeWindowForm(forms.Form):
     """
     start_time = forms.DateField(label=u'开始时间',required=False)
     end_time = forms.DateField(label=u'截止时间',required=False)
+
+class AdjustRelationForm(forms.Form):
+    oldtag = forms.CharField(label = u"旧tag",max_length = 8,widget=forms.TextInput({'class':'form-control'}))
+    newtag = forms.CharField(label=u'新tag',max_length=8,widget = forms.TextInput({'class':'form-control'}))

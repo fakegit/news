@@ -9,7 +9,7 @@ import six
 from six import iteritems
 import hashlib
 from news.models import Vocabulary
-import os
+import os,stat
 from os.path import dirname
 from news.configure import getDBConfigure,setDBConfigure
 import logging 
@@ -58,6 +58,8 @@ def build_user_dict():
         创建新的用户自定义词典
     """
     DIR = dirname(os.path.abspath(__file__))
+    # 666
+    filePermision = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH
     userDictFile = os.path.join(DIR,"userdict.txt")
 
     useUserDefinedDict = getDBConfigure("USE_USER_DEFINED_DICT",default=0,type_=lambda x:bool(int(x)))
@@ -66,6 +68,7 @@ def build_user_dict():
         if not os.path.exists(nullUserDictFile):
             with open(nullUserDictFile,"w+") as f:
                 print "created nulluserdict.txt"
+            os.chmod(nullUserDictFile,filePermision)
         print "USE_USER_DEFINED_DICT=OFF,use null dict instead"
         return nullUserDictFile
 
@@ -74,6 +77,7 @@ def build_user_dict():
         if not os.path.exists(userDictFile):
             with open(userDictFile,"w+") as f:
                 print "File userdict.txt does not exist,create an empty one"
+            os.chmod(userDictFile,filePermision)
         print "use the old userdict.txt file"
         return userDictFile
 
@@ -99,6 +103,8 @@ def build_user_dict():
                 f.write(template_line.format(**word).encode("utf-8"))
 
             writted  = writted + step
+    
+    os.chmod(userDictFile,filePermision)
     print "rebuilt the userdict.txt"
     return userDictFile
         

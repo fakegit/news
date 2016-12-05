@@ -11,9 +11,10 @@ from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse
 from django.db.models import Count,Avg,Sum
 from django.http import HttpResponse,JsonResponse
+from django.contrib.auth.decorators import login_required
 
-from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm
-from news.models import News,SearchTrace
+from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm,AdjustRelationForm
+from news.models import News,SearchTrace,Tags,TagsNews
 from news.getqiu.search.filters.newsfilter  import NewsFilter
 from news.getqiu.search.filters.paginator import PageFilter
 from news.getqiu.search.context import ViewContext    
@@ -23,7 +24,7 @@ from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
 from news.configure import getDaysRangeForSearchResult as daysrange
 from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
 
-from news.utils import convert2date,time2str
+from news.utils import convert2date,time2str,md5
 from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
 
 
@@ -31,6 +32,13 @@ from ip2location.ipresolver import Resolver
 from ip2location.recoder import VisitorRecoder
 from ip2location.generator import IpGenerator
 from ip2location.userdetail import RequestInfo
+
+class LoginRequiredMixin(object):
+    
+    @classmethod
+    def as_view(cls, **initkwargs):
+        view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
+        return login_required(view,login_url="/")
 
 class HomePage(TemplateView):
     template_name = 'news/home_page.html'
@@ -251,3 +259,37 @@ class AboutUs(TemplateView):
     
     def get(self,request):
         return render(request,self.template_name)
+
+class AdjustRelation(LoginRequiredMixin,TemplateView):
+
+    template_name = "news/adjust_relation.html"
+
+    def get(self,request):
+        """
+        """
+        adjust_relation_form = AdjustRelationForm()
+        context = {"form":adjust_relation_form}
+        return render(request,self.template_name,context)
+
+    def post(self,request):
+        """
+         仅仅是将原来的关系复制了一份，原先的并不删除原先
+        """
+        adjust_relation_form = AdjustRelationForm(request.POST)
+        if adjust_relation_form.is_valid():
+            oldtag = adjust_relation_form.cleaned_data["oldtag"]
+            newtag = adjust_relation_form.cleaned_data["newtag"]
+            oldnewsObject = News.objects.filter(tags__tag=oldtag)
+            try:
+                newTagObject = Tags.objects.get(tag=newtag)
+            except Tags.DoesNotExist:
+                newTagObject = Tags(tag=newtag,tag_hash=md5(newtag))
+                newTagObject.save()
+
+            TagsNews.objects.bulk_create([
+                TagsNews(news=n,tags=newTagObject) for n in oldnewsObject if not TagsNews.objects.filter(news=n,tags=newTagObject).exists()
+            ])
+
+            return redirect(reverse('news:transform')+"?reason=%s" % "applied the adjustion")
+        else:
+            return render(request,self.template_name,context={"form":adjust_relation_form})

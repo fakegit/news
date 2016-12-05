@@ -24,16 +24,19 @@ class Command(BaseCommand):
         """
         """
         dictfilepath = "/usr/local/lib/python2.7/dist-packages/jieba/dict.txt"
-        with open(dictfilepath,'r') as f:
-            oneline = f.next()
-            while oneline:
-                word, freq, tag = self.re_userdict.match(oneline).groups()
-                try:
-                    word = Vocabulary.objects.get(word=word)
-                except Vocabulary.DoesNotExist:
-                    newsysword = Vocabulary(word=word,frequency=freq,characteristic=tag,brand="system")
-                    newsysword.save()
-
+        try:
+            with open(dictfilepath,'r') as f:
                 oneline = f.next()
+                while oneline:
+                    word, freq, tag = self.re_userdict.match(oneline).groups()
+                    try:
+                        word = Vocabulary.objects.get(word=word)
+                    except Vocabulary.DoesNotExist:
+                        newsysword = Vocabulary(word=word,frequency=freq,characteristic=tag,brand="system")
+                        newsysword.save()
 
-        self.stdout.write("import all the jieba system dict.txt")
+                    oneline = f.next()
+        except StopIteration:
+            self.stdout.write("import all the jieba system dict.txt")
+
+        
