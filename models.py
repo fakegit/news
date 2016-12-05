@@ -214,21 +214,30 @@ class SearchTrace(models.Model):
 
 class Vocabulary(models.Model):
     """
-    CREATE TABLE `news_vocabulary` (
+    Create Table: CREATE TABLE `news_vocabulary` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `word` varchar(16) NOT NULL,
-    `frequency` int(11) NOT NULL default '2',
-    `characteristic` varchar(8) NOT NULL,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;     
+    `frequency` int(11) DEFAULT NULL,
+    `characteristic` varchar(8) DEFAULT NULL,
+    `brand` varchar(8) NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_index__word` (`word`),
+    KEY `index__brand__word__id` (`brand`,`word`,`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=40051 DEFAULT CHARSET=utf8
     """
-    word = models.CharField(max_length="16",verbose_name="词语")
-    frequency = models.IntegerField(verbose_name="词频",default=2)
-    characteristic = models.CharField(max_length=8,verbose_name="词性")
-
+    BRAND=(
+        ('system','系统'),
+        ('user','自定义'),
+    )
+    word = models.CharField(max_length="16",verbose_name="词语",unique=True)
+    frequency = models.IntegerField(verbose_name="词频",default=2,null=True)
+    characteristic = models.CharField(max_length=8,verbose_name="词性",null=True)
+    brand = models.CharField(max_length="8",default="user",choices=BRAND,verbose_name="词来源")
     class Meta:
-        verbose_name="自定义词典"
+        verbose_name="词典"
         verbose_name_plural = verbose_name
+        index_together = (("brand","word","id"),)
+        ordering=["-word"]
 
     def __unicode__(self):
         return self.word 

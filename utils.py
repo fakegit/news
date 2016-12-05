@@ -59,7 +59,17 @@ def build_user_dict():
     """
     DIR = dirname(os.path.abspath(__file__))
     userDictFile = os.path.join(DIR,"userdict.txt")
-    needRebuildUserDefinedDict = getDBConfigure("RE_BUILD_USER_DEFINED_DICT",default=0,type_=lambda x:bool(int(x)))
+
+    useUserDefinedDict = getDBConfigure("USE_USER_DEFINED_DICT",default=0,type_=lambda x:bool(int(x)))
+    if not useUserDefinedDict:
+        nullUserDictFile = os.path.join(DIR,"nulluserdict.txt")
+        if not os.path.exists(nullUserDictFile):
+            with open(nullUserDictFile,"w+") as f:
+                print "created nulluserdict.txt"
+        print "USE_USER_DEFINED_DICT=OFF,use null dict instead"
+        return nullUserDictFile
+
+    needRebuildUserDefinedDict = getDBConfigure("RE_BUILD_USER_DEFINED_DICT",default=1,type_=lambda x:bool(int(x)))
     if not needRebuildUserDefinedDict:
         if not os.path.exists(userDictFile):
             with open(userDictFile,"w+") as f:
@@ -76,12 +86,13 @@ def build_user_dict():
     
     template_line = u"{word} {frequency} {characteristic}\n"
     with open(userDictFile,'w') as f:
-        wordCount = Vocabulary.objects.count()
+        wordCount = Vocabulary.objects.filter(brand="user").count()
         step = 300
         writted = 0
         while writted < wordCount:
              
-            words = Vocabulary.objects.values("word","frequency","characteristic")\
+            words = Vocabulary.objects.filter(brand="user")\
+                              .values("word","frequency","characteristic")\
                               .all()[writted:writted+step]
             
             for word in words:

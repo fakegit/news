@@ -88,7 +88,16 @@ admin.site.register(SearchTrace,SearchTraceAdmin)
 class VocabularyAdmin(admin.ModelAdmin):
     """
     """
-    list_display=('word','frequency',"characteristic")
+    list_display=('id','word','frequency',"characteristic")
     list_per_page=30
+    search_fields = ["=word",]
+    list_filter = ("brand",)
+
+    def get_queryset(self,request):
+        """
+            仅仅显示自定义
+        """
+        #return super(VocabularyAdmin,self).get_queryset(request).filter(brand="user")
+        return super(VocabularyAdmin,self).get_queryset(request)
 
 admin.site.register(Vocabulary,VocabularyAdmin)
