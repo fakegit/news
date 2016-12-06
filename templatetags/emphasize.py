@@ -6,6 +6,7 @@ from news.models import News
 import lxml.html
 from django.core.cache import cache
 from news.configure import getDBConfigure
+from pywebsites import settings
 
 register = template.Library()
 
@@ -50,3 +51,19 @@ def find_cover_img(input_string):
     covers = dom.xpath("//img/@src[starts-with(.,'http')]")
     news_cover = covers[0] if covers else DEFAULT_NEWS_COVER
     return news_cover
+
+@register.filter(name="cdnadapter")
+def cdnadapter(originsource):
+    """
+        替换相关的图片
+    """
+    static_url = settings.STATIC_URL
+    if static_url.startswith("/static/"):
+        #说明配置就是 /static 不用修改
+        return originsource
+    elif static_url.startswith("http"):
+        # 启动了cdn
+        if originsource.startswith("/static/"):
+            # 将/static 替换成 cdn
+            return originsource.replace("/static/",static_url)
+    return originsource
