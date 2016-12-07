@@ -94,3 +94,12 @@ def getMaxSearchPerDay():
         MaxMaxSearchPerDayCacheLife = durationOfSettings()
         cache.set("MaxSearchPerDay",MaxSearchPerDay,MaxMaxSearchPerDayCacheLife)
     return cache.get("MaxSearchPerDay")
+
+def getMaxItemOnHeadline():
+    """
+    """
+    if not cache.get("MaxItemOnHeadline"):
+        MaxItemOnHeadline = getDBConfigure("MAX_ITEM_ON_HEADLINE",default=19,type_=int)
+        MaxMaxItemOnHeadlineCacheLife = durationOfSettings()
+        cache.set("MaxItemOnHeadline",MaxItemOnHeadline,MaxMaxItemOnHeadlineCacheLife)
+    return cache.get("MaxItemOnHeadline")

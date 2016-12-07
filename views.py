@@ -5,7 +5,7 @@ import datetime
 import time
 from datetime import timedelta
 
-
+import jieba
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse
@@ -13,17 +13,18 @@ from django.db.models import Count,Avg,Sum
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.decorators import login_required
 
-from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm,AdjustRelationForm
+from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm,MigrateRelationForm
 from news.models import News,SearchTrace,Tags,TagsNews
 from news.getqiu.search.filters.newsfilter  import NewsFilter
 from news.getqiu.search.filters.paginator import PageFilter
 from news.getqiu.search.context import ViewContext    
 from news.getqiu.statistics.count import ClickRecoder
 from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
+from news.getqiu.search import  conf
 
 from news.configure import getDaysRangeForSearchResult as daysrange
 from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
-
+from news.configure import getMaxItemOnHeadline
 from news.utils import convert2date,time2str,md5
 from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
 
@@ -179,9 +180,10 @@ class NewsInToday(TemplateView):
     template_name = 'news/news_in_today.html'
     def get(self,request):
         """ """
+        maxItemOnHeadline = getMaxItemOnHeadline()
         today = datetime.date.today()
         news_today = News.objects.only('title','news_time','rank','cover','content',"news_url")\
-                                 .filter(news_time=today,rank__gte=997).order_by("-rank")
+                                 .filter(news_time=today,rank__gte=997).order_by("-rank")[0:maxItemOnHeadline]
         context = {
             "news":news_today,
         }
@@ -260,26 +262,28 @@ class AboutUs(TemplateView):
     def get(self,request):
         return render(request,self.template_name)
 
-class AdjustRelation(LoginRequiredMixin,TemplateView):
+class MigrateRelation(LoginRequiredMixin,TemplateView):
 
-    template_name = "news/adjust_relation.html"
+    template_name = "news/migrate_relation.html"
 
     def get(self,request):
         """
         """
-        adjust_relation_form = AdjustRelationForm()
-        context = {"form":adjust_relation_form}
+        migrate_relation_form = MigrateRelationForm()
+        context = {"form":migrate_relation_form}
         return render(request,self.template_name,context)
 
     def post(self,request):
         """
          仅仅是将原来的关系复制了一份，原先的并不删除原先
         """
-        adjust_relation_form = AdjustRelationForm(request.POST)
-        if adjust_relation_form.is_valid():
-            oldtag = adjust_relation_form.cleaned_data["oldtag"]
-            newtag = adjust_relation_form.cleaned_data["newtag"]
-            oldnewsObject = News.objects.filter(tags__tag=oldtag)
+        migrate_relation_form = MigrateRelationForm(request.POST)
+        if migrate_relation_form.is_valid():
+            oldtag = migrate_relation_form.cleaned_data["oldtag"]
+            newtag = migrate_relation_form.cleaned_data["newtag"]
+
+            key_words = self.find_key_words(oldtag)
+            oldnewsObject = reduce(self.narrow_queryset,key_words,News.objects.all())
             try:
                 newTagObject = Tags.objects.get(tag=newtag)
             except Tags.DoesNotExist:
@@ -292,4 +296,14 @@ class AdjustRelation(LoginRequiredMixin,TemplateView):
 
             return redirect(reverse('news:transform')+"?reason=%s" % "applied the adjustion")
         else:
-            return render(request,self.template_name,context={"form":adjust_relation_form})
+            return render(request,self.template_name,context={"form":migrate_relation_form})
+
+    def narrow_queryset(self,tmp_queryset,tag):
+        return tmp_queryset.filter(tags__tag=tag)
+        
+    def find_key_words(self,input_sting):
+        key_words = jieba.lcut(input_sting)
+        #key_words = jieba.cut_for_search(input_sting)
+        key_words = list(set(key_words))#去除重复
+        key_words = filter(lambda x:False if x in conf.MEANINGLESS_WORDS else True,key_words)
+        return key_words
