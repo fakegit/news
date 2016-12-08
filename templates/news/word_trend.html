@@ -1,97 +1,225 @@
 {% extends 'news_base/skeleton.html' %}
 {% block head_block %}
-	<title>事物发展趋势图</title> 
+	<title>话题活跃度趋势图</title> 
 	<meta name="keywords" content="getqiu,关于我们">
 	<meta name="description" content="getqiu新闻检索系统关于我们">
     <style>
         .white-text{color:#FFF!important}
     </style>
-    <script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+    
+    {% load staticfiles %}
+
+    <link href="{% static 'news/css/daterangepicker.css' %}" rel="stylesheet" type="text/css"> 
+    <script type="text/javascript" src="{% static 'news/js/moment.min.js' %}"></script>  
+    <script type="text/javascript" src="{% static 'news/js/daterangepicker.js' %}"></script> 
+    <!--   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.3.2/echarts.min.js"></script>
+    -->
+    <script src="{% static 'news/js/echarts.min.js' %}"></script>
+    <script>
+        Date.prototype.format = function(fmt)   
+        { //author: meizz   
+        var o = {   
+            "M+" : this.getMonth()+1,                 //月份   
+            "d+" : this.getDate(),                    //日   
+            "h+" : this.getHours(),                   //小时   
+            "m+" : this.getMinutes(),                 //分   
+            "s+" : this.getSeconds(),                 //秒   
+            "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+            "S"  : this.getMilliseconds()             //毫秒   
+        };   
+        if(/(y+)/.test(fmt))   
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+        for(var k in o)   
+            if(new RegExp("("+ k +")").test(fmt))   
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+        return fmt;   
+        };
+
+
+    </script>
 {% endblock %}
+
+
+{%block header%}
+    {% include 'news_base/header_top_info.html'%}
+
+        <div class="container">
+        <div class="row">
+        <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
+
+                <form method="GET" action="{% url 'news:word_trend' %}">
+
+                    <div class="input-group">
+
+                        <input type="text" id="keyword" class="form-control" name="q" placeholder="话题趋势" value="{{q}}">
+                    
+                    <span class="input-group-btn">
+
+                        <button class="btn btn-default" type="submit" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+
+                    </span>
+
+                    </div><!-- /input-group -->
+                </form>
+        </div>
+        </div>
+        </div>
+
+{%endblock%}
 
 
 {% block main_body %}
 
-<div id="paint-container" style="min-width:400px;height:400px;"></div>
-<div class="message"></div>
+
+
+<div class="container">
+    <div class="row">
+
+
+        <div class="col-md-6 col-sm-6 col-md-offset-3">
+
+
+            <div class="form-group  has-feedback">
+                <label class="control-label" for="daterange">起止时间:</label>
+                <input type="text" class="form-control" id="daterange">
+                <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
+            </div>
+
+        </div>
+
+        <div class="col-md-12 col-sm-12">
+            <div id="chart-container" style="width:100%;height:60%;"></div>
+        </div>
+    </div>
+  
+</div>
 
 <script>
 
-$(function(){
+(function(){
+    var today = new Date();
+    var starttime = new Date(today.getTime()-1000*60*60*24*29*1);//29天
+    var endtime = new Date();
+    var keyword = $("#keyword").val();
+    var chart = echarts.init(document.getElementById("chart-container"));
 
-    $.getJson("/word-trend-api/?search_word=中国",function(trenddata){
-        $("#paint-container").highcharts({
-            data:{
-                csv:trenddata
-            },
-            title:{
-                text:"当前搜索词语趋势图"
-            },
-            subtitle:{
-                text:"getqiu分析"
-            },
-            xAxis:{
-                tickInterval:24*3600*1000, //一天
-                tickWidth:0,
-                gridLineWidth:1,
-                labels:{
-                    align:"left",
-                    x:3,
-                    y:-3,
-                }
-            },
-            yAxis:[{
+    /**
+    *   暂时没用
+    */
+    var str2date = function(strdate)   
+    {   
+        var digitDate = strdate.split("-");
+        return new Date(digitDate[0],digitDate[1]-1,digitDate[2]);
+    };    
+    /**
+    *画图函数，必须传入3个参数，关键字，开始时间，截止时间
+    */
+    var draw = function(q,start,end){
+
+        $.get("/news/word-trend-api/?q="+q+"&start="+start+"&end="+end).done(function(data){
+            var time  = Array();
+            var count = Array();
+
+            $.each(data,function(n,value){
+                time.push(value.time);
+                count.push(value.count);
+            });
+            chart.setOption({
                 title:{
-                    text:null
+                    text:"话题活跃度趋势图"
                 },
-                labels:{
-                    align:"left",
-                    x:3,
-                    y:16,
-                    format:'{value:.,of}'
-                },
-                showFirstLabel:false
-            },{
-                //right y axis
-            }],
-            legend:{
-                align:"left",
-                verticalAlign:"top",
-                y:20,
-                floating:true,
-                borderWidth:0
-            },
-            tooltip:{
-                shared:true,
-                crosshairs:true
-            },
-            plotOptions:{
-                series:{
-                    cursor:"pointer",
-                    point:{
-                        events:{
-                            click:function(e){
-                                $(".message").html(Highchars.dateFormat("%Y-%m-%d",this.x)+"<br/>"+this.y);
-                            }
-                        }
-                    },
-                    marker:{
-                        lineWidth:1
-                    }
-                }
-            },
-            series:[{
-                name:"All visits",
-                lineWidth:4,
-                marker:{
-                    radius:4
-                },{
-                    name:"new visitors"
-                }
-            }]
-        });
-    });
-});
+                tooltip:{
 
-</script>
+                },
+                // legend:{
+                //     data:["活跃度"]
+                // },
+                xAxis:{
+                    data:time,
+                    //type:"time"
+                },
+                yAxis:{},
+                series:[{
+                    name:"活跃度",
+                    type:"bar",
+                    data:count
+                }]
+            });
+        });//for get
+    };
+
+    /**
+    *将时间转化为字符串
+    */
+    var convertDate2str = function(date){
+        if(date instanceof Date)
+        {
+            return date.format('yyyy-MM-dd');
+        }
+        else{
+            return date;
+        }
+    };
+
+    /**
+    * is True 判断
+    */
+    var isTrue = function(exp){
+        if(typeof(exp)!="undefined" && exp!=0 && exp != ""){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+    * 初始化时间范围选择控件
+    */
+    $("#daterange").daterangepicker({
+        startDate:starttime,
+        endDate:endtime,
+        maxDate : moment(),
+        opens : 'right',
+        dateLimit:{
+            days:120,
+        },
+        ranges:{
+            "最近7天":[moment().subtract(7,'days'), moment()],
+            "最近一月":[moment().subtract(1,"months"), moment()],
+            "最近三月":[moment().subtract(3,"months"), moment()],
+        },
+        locale:{
+            applyLabel :"确定",
+            cancelLabel:"取消",
+            fromLabel:"开始时间",
+            toLabel:"结束时间",
+            customRangeLabel:"自定义",
+            daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
+            monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月','七月', '八月', '九月', '十月', '十一月', '十二月' ],
+
+        }
+    },function(start,end,label){
+        var k = $("#keyword").val();        
+        var s = start.format('YYYY-MM-DD');
+        var e =   end.format('YYYY-MM-DD');
+        if(isTrue(k)){
+            draw(k,s,e);
+        }        
+    });
+
+
+    /**
+    * 页面刚刚加载完成执行第一次
+    */ 
+    (function(){
+        var start = convertDate2str(starttime);
+        var end = convertDate2str(endtime);
+        draw(keyword,start,end);
+    })();
+})();
+
+
+
+
+</script>  
 {% endblock %}

@@ -156,7 +156,8 @@ class WordTrendAPI(TemplateView):
         end_time = convert2date(end_time) if end_time else datetime.date.today()              
 
         word_trend = News.objects\
-                         .filter(news_time__gte=start_time,news_time__lte=end_time)\
+                         .filter(news_time__gte=start_time,news_time__lt=end_time)\
+                         .filter(tags__tag=query_word)\
                          .order_by("news_time")\
                          .values("news_time")\
                          .annotate(n=Count("news_time"))
@@ -170,8 +171,8 @@ class WordTrend(TemplateView):
     """
     template_name = "news/word_trend.html"
     def get(self,request):
-
-        return render(request,self.template_name,context = {})
+        q = request.GET.get("q","中国")
+        return render(request,self.template_name,context = {"q":q})
 
 class NewsInToday(TemplateView):
     """
