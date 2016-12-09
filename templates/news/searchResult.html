@@ -62,10 +62,11 @@
               {% load style %}
               {% for one_news in model_objects %}
                     <li class="media">
-                      <div class="pull-left news-cover" >
-               
-                         <img src="{{ one_news.cover|cdnadapter}}" alt="{{one_news.title}}" class="img-responsive">
-          
+                      <div class="media-left" >
+                        <div class="news-cover">
+                            <img src="{{ one_news.cover|cdnadapter}}" alt="{{one_news.title}}" class="img-responsive">
+                        </div>
+                                   
                       </div>
                       <div class="media-body">
                          <h4 class="media-heading">

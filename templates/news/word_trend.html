@@ -62,6 +62,13 @@
 
                     </div><!-- /input-group -->
                 </form>
+            {% load recommand %}
+            {% recommend_words as hotwords %}
+            <ul class="list-inline">
+                {% for hot_word in hotwords %}
+                    <li><a href="{% url 'news:word_trend' %}?q={{hot_word}}">{{hot_word}}</a></li>
+                {%endfor%}
+            </ul>            
         </div>
         </div>
         </div>
