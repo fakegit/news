@@ -89,7 +89,7 @@
 
             <div class="form-group  has-feedback">
                 <label class="control-label" for="daterange">起止时间:</label>
-                <input type="text" class="form-control" id="daterange">
+                <input type="text" class="form-control" id="daterange" readonly>
                 <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
             </div>
 
@@ -191,8 +191,8 @@
             days:120,
         },
         ranges:{
-            "最近7天":[moment().subtract(7,'days'), moment()],
             "最近一月":[moment().subtract(1,"months"), moment()],
+            "最近两月":[moment().subtract(2,"months"), moment()],
             "最近三月":[moment().subtract(3,"months"), moment()],
         },
         locale:{
