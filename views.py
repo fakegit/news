@@ -189,6 +189,20 @@ class WordTrendAPI(TemplateView):
         return new_word_trend_list
             
 
+class SpotForOneDayAPI(TemplateView):
+    """
+        加载指定时间指定关键词的前3条新闻新闻
+    """
+    def get(self,request):
+        """
+            返回一个List = [{"title":"XXX","hash_digest":"XXX"},.....]
+        """
+        q = request.GET.get("q","中国")
+        time = request.GET.get("t",datetime.date.today())
+        time = convert2date(time)
+        topNews = News.objects.filter(news_time=time,tags__tag=q).values("title","hash_digest").order_by("-rank")[0:3]
+        newsList = [t for t in topNews]
+        return JsonResponse(newsList,safe=False)
 
 class WordTrend(TemplateView):
     """

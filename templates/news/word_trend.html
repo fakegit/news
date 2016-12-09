@@ -5,6 +5,8 @@
 	<meta name="description" content="getqiu新闻检索系统关于我们">
     <style>
         .white-text{color:#FFF!important}
+        .toolbar-text{color:#FFF;font-size: 12px;}
+        .toolbar-text:hover{color:#FFF;text-decoration:underline;}
     </style>
     
     {% load staticfiles %}
@@ -84,7 +86,7 @@
     <div class="row">
 
 
-        <div class="col-md-6 col-sm-6 col-md-offset-3">
+        <div class="col-md-6 col-sm-6 col-md-offset-3 col-sm-offset-3">
 
 
             <div class="form-group  has-feedback">
@@ -93,6 +95,10 @@
                 <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
             </div>
 
+        </div>
+
+       <div class="col-md-6 col-sm-6 col-md-offset-3 col-sm-offset-3 hide" id="message">
+           
         </div>
 
         <div class="col-md-12 col-sm-12">
@@ -106,7 +112,7 @@
 
 (function(){
     var today = new Date();
-    var starttime = new Date(today.getTime()-1000*60*60*24*30*6);//最近6个月
+    var starttime = new Date(today.getTime()-1000*60*60*24*30*2);//最近2个月
     var endtime = new Date();
     var keyword = $("#keyword").val();
     var chart = echarts.init(document.getElementById("chart-container"));
@@ -118,7 +124,17 @@
     {   
         var digitDate = strdate.split("-");
         return new Date(digitDate[0],digitDate[1]-1,digitDate[2]);
-    };    
+    };
+
+    var showNewsTitle = function(newsList){
+        var htmlContent = "";
+        $.each(newsList,function(n,value){
+            htmlContent = htmlContent+"<a href='/news/news-detail/"+value.hash_digest+"/'"+" class='toolbar-text'>"+value.title+"</a><br/>";
+        });
+        $("#message").html(htmlContent);
+        return htmlContent;
+    }
+
     /**
     *画图函数，必须传入3个参数，关键字，开始时间，截止时间
     */
@@ -137,7 +153,26 @@
                     text:"话题活跃度趋势图"
                 },
                 tooltip:{
-
+                    formatter: function (params, ticket, callback) {
+                        $.get('/news/spot-for-oneday/?q='+keyword+"&t="+params.name, function (content) {
+                            callback(ticket, showNewsTitle(content));
+                            // console.log(ticket);
+                            // console.log(content);
+                        });
+                        //console.log(params);
+                        return '拼命加载中...';
+                    },
+                    padding: [
+                        2,  // 上
+                        4, // 右
+                        2,  // 下
+                        4, // 左
+                    ],
+                    position: ['10%', '10%'],
+                    showDelay:200,
+                    triggerOn:"click",
+                    enterable:"true",
+                    confine:"true",
                 },
                 // legend:{
                 //     data:["活跃度"]
@@ -191,9 +226,10 @@
             months:12,
         },
         ranges:{
-            "最近10个月":[moment().subtract(10,"months"), moment()],
-            "最近5个月":[moment().subtract(5,"months"), moment()],
+            "最近1个月":[moment().subtract(1,"months"), moment()],
             "最近3个月":[moment().subtract(3,"months"), moment()],
+            "最近6个月":[moment().subtract(6,"months"), moment()],
+            "最近12个月":[moment().subtract(12,"months"), moment()],
         },
         locale:{
             applyLabel :"确定",
