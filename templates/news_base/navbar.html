@@ -92,10 +92,14 @@
       });
 
 
-      $("#trend-hit").click(function(){
+      $("#trend-hit").mouseover(function(){
         $(this).addClass("hide");
         $("#trend-search").removeClass("hide");
       });
+      $("#trend-search").mouseleave(function(){
+        $(this).addClass("hide");
+        $("#trend-hit").removeClass("hide");
+      });      
     </script>
 
     <ul class="nav navbar-nav navbar-right">

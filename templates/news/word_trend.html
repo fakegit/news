@@ -106,7 +106,7 @@
 
 (function(){
     var today = new Date();
-    var starttime = new Date(today.getTime()-1000*60*60*24*29*1);//29天
+    var starttime = new Date(today.getTime()-1000*60*60*24*30*6);//最近6个月
     var endtime = new Date();
     var keyword = $("#keyword").val();
     var chart = echarts.init(document.getElementById("chart-container"));
@@ -188,12 +188,12 @@
         maxDate : moment(),
         opens : 'right',
         dateLimit:{
-            days:120,
+            months:12,
         },
         ranges:{
-            "最近一月":[moment().subtract(1,"months"), moment()],
-            "最近两月":[moment().subtract(2,"months"), moment()],
-            "最近三月":[moment().subtract(3,"months"), moment()],
+            "最近10个月":[moment().subtract(10,"months"), moment()],
+            "最近5个月":[moment().subtract(5,"months"), moment()],
+            "最近3个月":[moment().subtract(3,"months"), moment()],
         },
         locale:{
             applyLabel :"确定",
@@ -201,6 +201,7 @@
             fromLabel:"开始时间",
             toLabel:"结束时间",
             customRangeLabel:"自定义",
+            format: 'YYYY/MM/DD',
             daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
             monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月','七月', '八月', '九月', '十月', '十一月', '十二月' ],
 
