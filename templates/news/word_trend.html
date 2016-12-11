@@ -47,34 +47,40 @@
     {% include 'news_base/header_top_info.html'%}
 
         <div class="container">
-        <div class="row">
-        <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
-<!--
-                <form method="GET" action="{% url 'news:word_trend' %}">
--->
-                    <div class="input-group">
+            <div class="row">
+                <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
+        <!--
+                        <form method="GET" action="{% url 'news:word_trend' %}">
+        -->
+                    <form onsubmit="return false;" method="POST">
+                        <div class="input-group">
 
-                        <input type="text" id="keyword" class="form-control" name="q" placeholder="相关话题" value="{{q}}">
-                    
-                    <span class="input-group-btn">
+                            <input type="text" id="keyword" class="form-control" name="q" placeholder="相关话题" value="{{q}}">
+                        
+                        <span class="input-group-btn">
 
-                        <button class="btn btn-default" type="button" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+                            <button class="btn btn-default" type="button" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
 
-                    </span>
+                        </span>
 
-                    </div><!-- /input-group -->
-<!--                    
-                </form>
--->
-            {% load recommand %}
-            {% recommend_words as hotwords %}
-            <ul class="list-inline">
-                {% for hot_word in hotwords %}
-                    <li><a href="{% url 'news:word_trend' %}?q={{hot_word}}">{{hot_word}}</a></li>
-                {%endfor%}
-            </ul>            
-        </div>
-        </div>
+                        </div><!-- /input-group -->
+                        
+                    </form>
+                
+                   </div>
+              </div>
+
+                <div class="row">
+                   <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
+                        {% load recommand %}
+                        {% recommend_words as hotwords %}
+                        <ul class="list-inline">
+                            {% for hot_word in hotwords %}
+                                <li><a href="{% url 'news:word_trend' %}?q={{hot_word}}">{{hot_word}}</a></li>
+                            {%endfor%}
+                        </ul>                     
+                    </div>
+                </div>
         </div>
 
 {%endblock%}
