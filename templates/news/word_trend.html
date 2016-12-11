@@ -49,21 +49,23 @@
         <div class="container">
         <div class="row">
         <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
-
+<!--
                 <form method="GET" action="{% url 'news:word_trend' %}">
-
+-->
                     <div class="input-group">
 
-                        <input type="text" id="keyword" class="form-control" name="q" placeholder="话题趋势" value="{{q}}">
+                        <input type="text" id="keyword" class="form-control" name="q" placeholder="相关话题" value="{{q}}">
                     
                     <span class="input-group-btn">
 
-                        <button class="btn btn-default" type="submit" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+                        <button class="btn btn-default" type="button" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
 
                     </span>
 
                     </div><!-- /input-group -->
+<!--                    
                 </form>
+-->
             {% load recommand %}
             {% recommend_words as hotwords %}
             <ul class="list-inline">
@@ -90,8 +92,11 @@
 
 
             <div class="form-group  has-feedback">
+                <!--
                 <label class="control-label" for="daterange">起止时间:</label>
-                <input type="text" class="form-control" id="daterange" readonly>
+                -->
+                <input type="text" class="form-control" id="daterange" 
+                       style="cursor:pointer;background-color:#fff;" readonly>
                 <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
             </div>
 
@@ -110,7 +115,7 @@
 
 <script>
 
-(function(){
+var paint = (function(){
     var today = new Date();
     var starttime = new Date(today.getTime()-1000*60*60*24*30*2);//最近2个月
     var endtime = new Date();
@@ -133,7 +138,7 @@
         });
         $("#message").html(htmlContent);
         return htmlContent;
-    }
+    };
 
     /**
     *画图函数，必须传入3个参数，关键字，开始时间，截止时间
@@ -154,7 +159,8 @@
                 },
                 tooltip:{
                     formatter: function (params, ticket, callback) {
-                        $.get('/news/spot-for-oneday/?q='+keyword+"&t="+params.name, function (content) {
+                        var k = $("#keyword").val();
+                        $.get('/news/spot-for-oneday/?q='+k+"&t="+params.name, function (content) {
                             callback(ticket, showNewsTitle(content));
                             // console.log(ticket);
                             // console.log(content);
@@ -212,7 +218,7 @@
             return true;
         }
         return false;
-    }
+    };
 
     /**
     * 初始化时间范围选择控件
@@ -246,20 +252,55 @@
         var k = $("#keyword").val();        
         var s = start.format('YYYY-MM-DD');
         var e =   end.format('YYYY-MM-DD');
+
+        /**
+         * 跟新起止时间,让其它事件也能共享这个插件更改的变量
+         * 
+        */
+        starttime = new Date(start.valueOf());
+        endtime = new Date(end.valueOf());
         if(isTrue(k)){
             draw(k,s,e);
         }        
     });
 
 
+
+    var drawOnInit = function()
+    {
+        var k = $("#keyword").val();
+        var start = convertDate2str(starttime);
+        var end = convertDate2str(endtime);
+        if(isTrue(k))
+        {
+            draw(k,start,end);
+        }
+        
+    };
+
+    /*
+    * 绑定点击事件
+    */
+    $("#redraw").click(function(){
+        drawOnInit();
+    });
+
+    $("#keyword").keydown(function(event){ 
+        if(event.keyCode==13){
+            drawOnInit();
+        } 
+    });
     /**
     * 页面刚刚加载完成执行第一次
     */ 
     (function(){
-        var start = convertDate2str(starttime);
-        var end = convertDate2str(endtime);
-        draw(keyword,start,end);
+        drawOnInit();
     })();
+
+    return {
+        draw:drawOnInit
+    }
+
 })();
 
 

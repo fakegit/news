@@ -21,7 +21,7 @@ def clean_title(str_content):
     """
         直接从标题中提取title。去除163
     """
-    cleaned_string=re.sub(r'(_网易.*$|_.+_腾讯网.*$)','',str_content.encode('utf-8'))
+    cleaned_string=re.sub(r'_.*$','',str_content.encode('utf-8'))
     return cleaned_string.decode('utf-8')    
 
 def strip_blank(str_content):

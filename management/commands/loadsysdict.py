@@ -30,11 +30,11 @@ class Command(BaseCommand):
                 while oneline:
                     word, freq, tag = self.re_userdict.match(oneline).groups()
                     try:
-                        word = Vocabulary.objects.get(word=word)
-                    except Vocabulary.DoesNotExist:
+                        # 第一次导入,都应该不会重复,直接导入,错了再补救
                         newsysword = Vocabulary(word=word,frequency=freq,characteristic=tag,brand="system")
                         newsysword.save()
-
+                    except Exception as e:
+                        self.stderr.write("Exception accoured on saving %s" % word)
                     oneline = f.next()
         except StopIteration:
             self.stdout.write("import all the jieba system dict.txt")

@@ -103,3 +103,13 @@ def getMaxItemOnHeadline():
         MaxMaxItemOnHeadlineCacheLife = durationOfSettings()
         cache.set("MaxItemOnHeadline",MaxItemOnHeadline,MaxMaxItemOnHeadlineCacheLife)
     return cache.get("MaxItemOnHeadline")
+
+def getSearchStrategy():
+    """
+        获取搜索策略
+    """
+    if not cache.get("SearchStrategy"):
+        SearchStrategy = getDBConfigure("SEARCH_STRATEGY",default="NormalOrder",type_=str)
+        MaxSearchStrategyCacheLife = durationOfSettings()
+        cache.set("SearchStrategy",SearchStrategy,MaxSearchStrategyCacheLife)
+    return cache.get("SearchStrategy")    

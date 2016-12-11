@@ -1,23 +1,68 @@
+#!/usr/bin/env python
 #-*-coding:utf-8-*-
-class SearchStrategy(object):
-    """
-    搜索策略类
-    """
-    def search(self,keywords_list,model_manager):
-        #这个类必须要实现search方法
-        #keywords_list 是关键词
-        #model_manager为数据库中所有数据的queryset
-        #函数必须要返回一个queryset
-        pass
 
-
-class AddStrategy(SearchStrategy):
+# author : "qiulimao"
+# email  : "qiulimao@getqiu.com"
+from news.models import News
+from news.configure import getMaxCountForSearchResult as maxcount
+""" 
+ 排序策略
+""" 
+#---------- code begins below -------
+class OrderStretagy(object):
     
-    def get_item_by_and(self,queryset,key_word):
-        tmp_queryset = queryset.filter(title__contains=key_word)
-        return tmp_queryset    
-    
+    def limitResultCount(self,queryset):
+        return queryset[0:maxcount()]
+        
 
-    def search(self,keywords_list,model_manager):
-        #add 逻辑直接采用reduce简单又快捷
-        return  reduce(self.get_item_by_and,keywords_list,model_manager)    
+class NormalOrder(OrderStretagy):
+    
+    def __init__(self,queryset):
+        self.queryset = self.limitResultCount(queryset.order_by("-news_time","-rank"))
+        self.__idList = None
+
+    def __getIdList(self):
+        if self.__idList == None:
+            self.__idList =  [x[0] for x in self.queryset.values_list("id")]
+        return self.__idList
+
+    @property
+    def count(self):
+        """
+            return the count
+        """        
+        return len(self.__getIdList())
+
+    @property
+    def result(self):
+        """
+            return the queryset
+        """
+        return self.queryset
+
+class InQueryBasedOrder(OrderStretagy):
+    """
+        采用in查询来做排序
+    """
+    def __init__(self,queryset):
+        self.queryset = self.limitResultCount(queryset)
+        self.__idList = None
+
+    def __getIdList(self):
+        if self.__idList == None:
+            self.__idList =  [x[0] for x in self.queryset.values_list("id")]
+        return self.__idList
+
+    @property
+    def count(self):
+        """
+            return the count
+        """
+        return len(self.__getIdList())
+
+    @property
+    def result(self):
+        """
+            return the queryset
+        """
+        return News.objects.filter(id__in=self.__getIdList()).order_by("-id","-news_time","-rank")

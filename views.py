@@ -19,7 +19,7 @@ from news.getqiu.search.filters.newsfilter  import NewsFilter
 from news.getqiu.search.filters.paginator import PageFilter
 from news.getqiu.search.context import ViewContext    
 from news.getqiu.statistics.count import ClickRecoder
-from news.getqiu.search.engine import TitleBasedEngine,TagBasedSearch
+from news.getqiu.search.engine import TagBasedSearch
 from news.getqiu.search import  conf
 
 from news.configure import getDaysRangeForSearchResult as daysrange
@@ -99,7 +99,7 @@ class SearchResult(TemplateView):
             end_time = convert2date(end_time) if end_time else datetime.date.today()
 
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','news_time','rank','cover',"news_url").all(),
+            start_view_context = ViewContext(News.objects.only('title','hash_digest','news_time','rank','cover',"news_url").all(),
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
                                              {})
             filter_list = [
