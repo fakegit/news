@@ -140,7 +140,8 @@ var paint = (function(){
     var showNewsTitle = function(newsList){
         var htmlContent = "";
         $.each(newsList,function(n,value){
-            htmlContent = htmlContent+"<a href='/news/news-detail/"+value.hash_digest+"/'"+" class='toolbar-text'>"+value.title+"</a><br/>";
+            //因为这里news_detail需要参数，而参数又暂时不能确定。所以，只能用这种方式
+            htmlContent = htmlContent+"<a href='{% url 'news:home_page' %}news-detail/"+value.hash_digest+"/'"+" class='toolbar-text'>"+value.title+"</a><br/>";
         });
         $("#message").html(htmlContent);
         return htmlContent;
@@ -151,7 +152,7 @@ var paint = (function(){
     */
     var draw = function(q,start,end){
 
-        $.get("/news/word-trend-api/?q="+q+"&start="+start+"&end="+end).done(function(data){
+        $.get("{%url 'news:word_trend_api'%}?q="+q+"&start="+start+"&end="+end).done(function(data){
             var time  = Array();
             var count = Array();
 
@@ -166,7 +167,7 @@ var paint = (function(){
                 tooltip:{
                     formatter: function (params, ticket, callback) {
                         var k = $("#keyword").val();
-                        $.get('/news/spot-for-oneday/?q='+k+"&t="+params.name, function (content) {
+                        $.get('{% url "news:spot_for_oneday" %}?q='+k+"&t="+params.name, function (content) {
                             callback(ticket, showNewsTitle(content));
                             // console.log(ticket);
                             // console.log(content);

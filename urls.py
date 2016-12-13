@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^word-trend/$',views.WordTrend.as_view(),name="word_trend"),
     url(r'^spot-for-oneday/$',views.SpotForOneDayAPI.as_view(),name="spot_for_oneday"),
     url(r'^migrate-relation/$',views.MigrateRelation.as_view(),name="migrate_relation"),
-    url(r'^add-crawler-task/$',views.AddCrawlerTask.as_view(),name="add_crawler_task"),
     url(r'^news-detail/(?P<news_id>[0-9a-zA-Z]{32})/$',views.NewsDetail.as_view(),name="news_detail"),
     url(r'^suggestion/$',views.Suggestion.as_view(),name='suggestion'),
     url(r'^redirecting/$',views.TransformPage.as_view(),name='transform'),

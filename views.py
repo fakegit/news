@@ -240,12 +240,7 @@ class DeleteSearchRecord(TemplateView):
         #return render(request,self.template_name,context=None)
         return redirect(reverse('news:transform')+"?reason=%s" % "deleted outdated search record.")
 
-class AddCrawlerTask(TemplateView):
-    template_name = 'news/add_crawler_task.html'
-    
-    def get(self,request):
-        context = {'name':'qiulimao'}
-        return render(request,self.template_name,context)
+
         
         
 class NewsDetail(TemplateView):
