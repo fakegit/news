@@ -43,8 +43,32 @@
           <span class="glyphicon glyphicon-wrench"></span>
           设置
         <b class="caret"></b></a>
-        <ul class="dropdown-menu">          
-          <li><a href="{% url 'news:suggestion' %}">要不去提个建议?</a></li>
+        <ul class="dropdown-menu">
+          {% if user.username %}
+            <li>
+                
+                <a href="{% url 'news:app_manager' %}">
+                  <span class="glyphicon glyphicon-dashboard"></span>
+                  运行状态
+                </a>
+            </li>
+            <li>
+              
+              <a href="{% url 'news:migrate_relation' %}">
+                <span class="glyphicon glyphicon-tag"></span>
+                标签变更
+              </a>
+            </li>
+            <li>
+              
+              <a href="/adm1n/">
+                <span class="glyphicon glyphicon-cog"></span>
+                站点管理
+              </a>
+              </li>
+          {%else%}
+            <li><a href="{% url 'news:suggestion' %}">要不去提个建议?</a></li>
+          {%endif%}
         </ul>
       </li>
 

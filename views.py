@@ -156,7 +156,7 @@ class WordTrendAPI(TemplateView):
         end_time = convert2date(end_time) if end_time else datetime.date.today()              
 
         word_trend = News.objects\
-                         .filter(news_time__gte=start_time,news_time__lt=end_time)\
+                         .filter(news_time__gte=start_time,news_time__lte=end_time)\
                          .filter(tags__tag=query_word)\
                          .order_by("news_time")\
                          .values("news_time")\
@@ -173,7 +173,7 @@ class WordTrendAPI(TemplateView):
         new_word_trend_list = []
         tmp = start
         origin_index = 0
-        while tmp < end:
+        while tmp <= end:
             if origin_index >= len(word_trend):
                 new_word_trend_list.append({"news_time":tmp,"n":0})
                 tmp = tmp + timedelta(days=1)                
@@ -342,3 +342,57 @@ class MigrateRelation(LoginRequiredMixin,TemplateView):
         key_words = list(set(key_words))#去除重复
         key_words = filter(lambda x:False if x in conf.MEANINGLESS_WORDS else True,key_words)
         return key_words
+
+
+class AppManager(LoginRequiredMixin,TemplateView):
+    """
+        词语趋势展示图
+    """
+    template_name = "news/app_manager.html"
+    def get(self,request):
+        return render(request,self.template_name,context = {})
+
+class NewsAPI(TemplateView):
+
+    def get(self,request,action):
+        if hasattr(self,action):
+            return getattr(self,action)(request)
+        else:
+            return JsonResponse({"status":""})
+
+    def countEveryDay(self,request):
+        start_time = request.GET.get("start",datetime.date.today()-timedelta(days=daysrange()))
+        end_time = request.GET.get("end",datetime.date.today())
+        start_time = convert2date(start_time) if start_time else datetime.date.today()-timedelta(days=daysrange())
+        end_time = convert2date(end_time) if end_time else datetime.date.today()  
+        news_count = News.objects\
+                         .filter(news_time__gte=start_time,news_time__lte=end_time)\
+                         .order_by("news_time")\
+                         .values("news_time")\
+                         .annotate(n=Count("news_time"))
+        # 整理数据，做插零处理
+        news_count = self.contiue_date(news_count,start_time,end_time)
+        news_count = [{"time":time2str(d["news_time"]),"count":d["n"]} for d in news_count]
+        return JsonResponse(news_count,safe=False)
+
+    def contiue_date(self,count,start,end):
+        """
+            通过group by得到的时间是不连续的，应该通过插入0让它连续
+        """
+        new_count_list = []
+        tmp = start
+        origin_index = 0
+        while tmp <= end:
+            if origin_index >= len(count):
+                new_count_list.append({"news_time":tmp,"n":0})
+                tmp = tmp + timedelta(days=1)                
+            elif tmp != count[origin_index]["news_time"]:
+                # 只要是不等于，都应该插入0，不管是大还是小
+                new_count_list.append({"news_time":tmp,"n":0})
+                tmp = tmp + timedelta(days=1)
+            elif tmp == count[origin_index]["news_time"]:
+                new_count_list.append(count[origin_index])
+                tmp = tmp + timedelta(days=1)
+                origin_index = origin_index + 1
+
+        return new_count_list                  

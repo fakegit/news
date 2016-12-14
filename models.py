@@ -258,7 +258,7 @@ class Runtime(models.Model):
     key = models.CharField(max_length=32,unique=True,verbose_name="option Name")
     option = models.CharField(max_length=128,verbose_name="value",default="0")
     comment = models.CharField(max_length=512,verbose_name="注释",default="COMMENT")
-    time = models.DateTimeField(auto_now=True,auto_now_add=True,verbose_name="更新时间")
+    time = models.DateTimeField(auto_now=True,verbose_name="更新时间")
     class Meta:
         verbose_name="runtime"
         verbose_name_plural = verbose_name

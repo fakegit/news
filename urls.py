@@ -15,8 +15,10 @@ urlpatterns = [
     url(r'^migrate-relation/$',views.MigrateRelation.as_view(),name="migrate_relation"),
     url(r'^news-detail/(?P<news_id>[0-9a-zA-Z]{32})/$',views.NewsDetail.as_view(),name="news_detail"),
     url(r'^suggestion/$',views.Suggestion.as_view(),name='suggestion'),
+    url(r'^app-manager/$',views.AppManager.as_view(),name='app_manager'),
     url(r'^redirecting/$',views.TransformPage.as_view(),name='transform'),
     url(r'^about-us/$',views.AboutUs.as_view(),name='aboutus'),
+    url(r'^news-api/(?P<action>[a-zA-Z0-9\-\_]{1,32})/$',views.NewsAPI.as_view(),name='news_api'),
     url(r'^delete-search-record/$',views.DeleteSearchRecord.as_view(),name='delete_search_record'),
 ]
 
