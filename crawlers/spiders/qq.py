@@ -13,6 +13,8 @@ import re
 import datetime
 from news.settings import RANK_SORT_PARAMETER
 import logging
+import gc 
+from crawlers.settings import DEFAULT_NEWS_COVER
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +81,8 @@ class QqSpider(Spider):
             request.meta['category'] = category
             request.meta['news_time'] = news_time
             yield request
-            
+        
+        #gc.collect()
         
     
     def parse_one_news(self,response):
@@ -116,6 +119,60 @@ class QqSpider(Spider):
         
         news_loader.add_value('category',response.meta['category'])
         news_loader.add_value("site",u"qq.com")
-        #print response.xpath("//title/text()").extract()[0]
+
+        # 不要到pipeline当中去找这个cover
+        cover = response.xpath("//div[@id='Cnt-Main-Article-QQ']/p[not(style)]").xpath(".//img/@src[starts-with(.,'http')]").extract()
+        news_cover = cover[0] if cover else DEFAULT_NEWS_COVER
+        news_loader.add_value("cover",news_cover)
+
         return news_loader.load_item()
         
+
+
+class newsQQ(QqSpider):
+    name="news_qq"
+    start_urls = ["http://news.qq.com"]
+
+class milQQ(QqSpider):
+    name="mil_qq"
+    start_urls = ["http://mil.qq.com/mil_index.htm"]
+
+class sportsQQ(QqSpider):
+    name="sports_qq"
+    start_urls = ["http://sports.qq.com/"]
+
+class entQQ(QqSpider):
+    name="ent_qq"
+    start_urls = ["http://ent.qq.com/"]
+
+class financeQQ(QqSpider):
+    name="finance_qq"
+    start_urls = ["http://finance.qq.com/"]
+
+class stockQQ(QqSpider):
+    name="stock_qq"
+    start_urls = ["http://stock.qq.com/"]
+
+class autoQQ(QqSpider):
+    name="auto_qq"
+    start_urls = ["http://auto.qq.com/"]
+
+class techQQ(QqSpider):
+    name="tech_qq"
+    start_urls = ["http://tech.qq.com/"]
+
+class digiTechQQ(QqSpider):
+    name="digi_tech_qq"
+    start_urls = ["http://digi.tech.qq.com/"]
+
+class cdHouseQQ(QqSpider):
+    name="cd_house_qq"
+    start_urls = ["http://cd.house.qq.com/"]
+
+class bjHouseQQ(QqSpider):
+    name="bj_house_qq"
+    start_urls = ["http://bj.house.qq.com/"]
+
+class eduQQ(QqSpider):
+    name="edu_qq"
+    start_urls = ["http://edu.qq.com/"]

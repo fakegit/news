@@ -241,3 +241,52 @@ class Vocabulary(models.Model):
 
     def __unicode__(self):
         return self.word 
+
+
+class Runtime(models.Model):
+    """
+    CREATE TABLE `news_runtime` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `key` varchar(32) NOT NULL,
+    `option` varchar(128) NOT NULL,
+    `comment` varchar(512) NOT NULL,
+    `time` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_index__key` (`key`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;    
+    """
+    key = models.CharField(max_length=32,unique=True,verbose_name="option Name")
+    option = models.CharField(max_length=128,verbose_name="value",default="0")
+    comment = models.CharField(max_length=512,verbose_name="注释",default="COMMENT")
+    time = models.DateTimeField(auto_now=True,auto_now_add=True,verbose_name="更新时间")
+    class Meta:
+        verbose_name="runtime"
+        verbose_name_plural = verbose_name
+        #unique_together = ("v1", "v2")
+
+    def __unicode__(self):
+        return self.key
+
+    @classmethod
+    def getOption(cls,key,default=0,type_=str,comment="some commemnt"):
+        """
+        """
+        try:
+            runtimeInstance = cls.objects.get(key=key)
+        except cls.DoesNotExist:
+            runtimeInstance = cls(key=key,option=str(default),comment=comment)
+            runtimeInstance.save()
+        return type_(runtimeInstance.option)
+
+    @classmethod
+    def setOption(cls,key,option,comment="some commemnt"):
+        """
+        """
+        try:
+            runtimeInstance = cls.objects.get(key=key)
+            runtimeInstance.option = str(option)
+            runtimeInstance.save()
+        except cls.DoesNotExist:
+            runtimeInstance = cls(key=key,option=str(default),comment=comment)
+            runtimeInstance.save()
+        

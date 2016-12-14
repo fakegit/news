@@ -13,6 +13,8 @@ import re
 import datetime
 from news.settings import RANK_SORT_PARAMETER
 import logging
+import gc 
+from crawlers.settings import DEFAULT_NEWS_COVER
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +86,8 @@ class NeteaseSpider(Spider):
             request.meta['category'] = category
             request.meta['news_time'] = news_time
             yield request
+
+        #gc.collect()
             
         
     
@@ -109,12 +113,78 @@ class NeteaseSpider(Spider):
         content = response.xpath("//div[@id='endText']/p[not(style)]").extract()
         if content:
             news_loader.add_xpath('content',"//div[@id='endText']/p[not(style)]")
+            cover = response.xpath("//div[@id='endText']/p[not(style)]").xpath(".//img/@src[starts-with(.,'http')]").extract()
+            news_cover = cover[0] if cover else DEFAULT_NEWS_COVER
         else:
             news_loader.add_xpath("content","//div[@class='w_text']")
+            cover = response.xpath("//div[@class='w_text']").xpath(".//img/@src[starts-with(.,'http')]").extract()
+            news_cover = cover[0] if cover else DEFAULT_NEWS_COVER
             logger.debug("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
         
+        news_loader.add_value("cover",news_cover)
         news_loader.add_value('category',response.meta['category'])
         #print response.xpath("//title/text()").extract()[0]
         news_loader.add_value("site",u"163.com")
         return news_loader.load_item()
         
+
+class money163(NeteaseSpider):
+    name="money_163"
+    start_urls=["http://money.163.com",'http://money.163.com/stock/']
+
+class tech163(NeteaseSpider):
+    name="tech_163"
+    start_urls=["http://tech.163.com"]
+
+class news163(NeteaseSpider):
+    name="news_163"
+    start_urls=["http://news.163.com"]  
+
+class sports163(NeteaseSpider):
+    name="sports_163"
+    start_urls=["http://sports.163.com",'http://sports.163.com/nba/']
+
+class ent163(NeteaseSpider):
+    name="ent_163"
+    start_urls=["http://ent.163.com"]
+
+class auto163(NeteaseSpider):
+    name="auto_163"
+    start_urls=["http://auto.163.com"]
+
+class home163(NeteaseSpider):
+    name="home_163"
+    start_urls=["http://home.163.com"]  
+
+class war163(NeteaseSpider):
+    name="war_163"
+    start_urls=["http://war.163.com"] 
+
+class discovery163(NeteaseSpider):
+    name="discovery_163"
+    start_urls=["http://discovery.163.com"] 
+
+class mobile163(NeteaseSpider):
+    name="mobile_163"
+    start_urls=["http://mobile.163.com",'http://mobile.163.com/iphone/','http://mobile.163.com/android/'] 
+
+class digi163(NeteaseSpider):
+    name="digi_163"
+    start_urls=["http://digi.163.com"]
+class lady163(NeteaseSpider):
+    name="lady_163"
+    start_urls=["http://lady.163.com"] 
+class edu163(NeteaseSpider):
+    name="edu_163"
+    start_urls=["http://edu.163.com"] 
+class jiankang163(NeteaseSpider):
+    name="jiankang_163"
+    start_urls=["http://jiankang.163.com"] 
+class travel163(NeteaseSpider):
+    name="travel_163"
+    start_urls=["http://travel.163.com"]
+class house163(NeteaseSpider):
+    name="house_163"
+    start_urls=["http://bj.house.163.com","http://cd.house.163.com"]    
+
+    

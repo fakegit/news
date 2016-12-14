@@ -29,6 +29,7 @@ class NewsItem(scrapy.Item):
     hash_digest = scrapy.Field()
     site = scrapy.Field()
     category = scrapy.Field()
+    cover = scrapy.Field()
 
 
 #class HoleItem(DjangoItem):

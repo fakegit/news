@@ -14,14 +14,15 @@ def addredtag(initial_string,one_word):
     """
         在给定的字符串中，将某些关键词着重处理
     """
-    return initial_string.replace(one_word,"<font color='red'>"+one_word+"</font>")
+    #return initial_string.replace(one_word,"<font color='red'>"+one_word+"</font>")
+    return initial_string.replace(one_word.lower(),"<font color='red'>"+one_word+"</font>")
 
 @register.filter(name='redkeywords')
 def redkeywords(input_string,keywords_list):
     """
      对input_string当中的keywords做着重处理
     """
-    taged_sring = reduce(addredtag,keywords_list,input_string)
+    taged_sring = reduce(addredtag,keywords_list,input_string.lower())
     return safe(taged_sring)
     
     

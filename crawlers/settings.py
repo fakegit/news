@@ -42,7 +42,8 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY=3
+# 设置这个delay，让队列中的request尽快被处理完。
+DOWNLOAD_DELAY=0.1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN=16
 #CONCURRENT_REQUESTS_PER_IP=16
@@ -51,7 +52,10 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like
 #COOKIES_ENABLED=False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED=False
+##
+# 6023端口
+##
+TELNETCONSOLE_ENABLED=False
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -68,6 +72,7 @@ LOG_FILE = os.path.join(TOP_DIR,"news","scrapy_log.log")
 #    'crawlers.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 DOWNLOAD_TIMEOUT=10
+DEFAULT_NEWS_COVER = u"/static/news/image/newsCover.jpg"
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
