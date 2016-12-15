@@ -112,4 +112,14 @@ def getSearchStrategy():
         SearchStrategy = getDBConfigure("SEARCH_STRATEGY",default="NormalOrder",type_=str)
         MaxSearchStrategyCacheLife = durationOfSettings()
         cache.set("SearchStrategy",SearchStrategy,MaxSearchStrategyCacheLife)
-    return cache.get("SearchStrategy")    
+    return cache.get("SearchStrategy")  
+
+def getHalfRankForTrend():
+    """
+        获取 加权 新闻活跃值 排行 半衰期
+    """
+    if not cache.get("HalfRankForTrend"):
+        HalfRankForTrend = getDBConfigure("HALF_RANK_FOR_TREND",default=30,type_=int)
+        MaxHalfRankForTrendCacheLife = durationOfSettings()
+        cache.set("HalfRankForTrend",HalfRankForTrend,MaxHalfRankForTrendCacheLife)
+    return cache.get("HalfRankForTrend")   

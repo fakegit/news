@@ -94,7 +94,7 @@
     <div class="row">
 
 
-        <div class="col-md-6 col-sm-6 col-md-offset-3 col-sm-offset-3">
+        <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
 
 
             <div class="form-group  has-feedback">
@@ -113,7 +113,7 @@
         </div>
 
         <div class="col-md-12 col-sm-12">
-            <div id="chart-container" style="width:100%;height:60%;"></div>
+            <div id="chart-container" style="width:100%;height:80%;"></div>
         </div>
     </div>
   
@@ -155,19 +155,24 @@ var paint = (function(){
         $.get("{%url 'news:word_trend_api'%}?q="+q+"&start="+start+"&end="+end).done(function(data){
             var time  = Array();
             var count = Array();
+            var score = Array();
+            var weight= Array();
 
             $.each(data,function(n,value){
                 time.push(value.time);
                 count.push(value.count);
+                score.push(value.score);
+                weight.push(10*value.weight);
             });
             chart.setOption({
                 title:{
+                    left:"center",
                     text:"话题活跃度趋势图"
                 },
                 tooltip:{
                     formatter: function (params, ticket, callback) {
                         var k = $("#keyword").val();
-                        $.get('{% url "news:spot_for_oneday" %}?q='+k+"&t="+params.name, function (content) {
+                        $.get('{% url "news:news_api" "spotForOneDay" %}?q='+k+"&t="+params.name, function (content) {
                             callback(ticket, showNewsTitle(content,params.name));
                             // console.log(ticket);
                             // console.log(content);
@@ -181,24 +186,53 @@ var paint = (function(){
                         2,  // 下
                         4, // 左
                     ],
-                    position: ['10%', '10%'],
+                    //position: ['10%', '10%'],
                     showDelay:200,
-                    triggerOn:"click",
+                    //triggerOn:"click",
                     enterable:"true",
                     confine:"true",
                 },
-                // legend:{
-                //     data:["活跃度"]
-                // },
+                legend:{
+                   left:"15%",
+                   top:"20%",
+                   orient:"vertical",
+                   data:["绝对活跃度","加权活跃度","活跃度权重"]
+                },
                 xAxis:{
                     data:time,
                     //type:"time"
                 },
                 yAxis:{},
                 series:[{
-                    name:"活跃度",
+                    name:"加权活跃度",
+                    type:"line",
+                    smooth: true,
+                    data:score,
+                    itemStyle : {
+                        normal:{
+                            color:'purple'
+                        }
+                    }
+                },{
+                    name:"绝对活跃度",
                     type:"bar",
-                    data:count
+                    smooth: true,
+                    data:count,
+                    itemStyle : {
+                        normal:{
+                            color:'#d43f3a'
+                        }
+                    }                    
+                },{
+                    name:"活跃度权重",
+                    type:"line",
+                    smooth: true,
+                    data:weight,
+                    itemStyle : {
+                        normal:{
+                            color: '#46b8da'
+                        }
+                    }                    
                 }]
             });
         });//for get

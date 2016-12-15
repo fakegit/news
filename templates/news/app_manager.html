@@ -7,6 +7,7 @@
         .white-text{color:#FFF!important}
         .toolbar-text{color:#FFF;font-size: 12px;}
         .toolbar-text:hover{color:#FFF;text-decoration:underline;}
+        .draw-plain{width:100%;height:80%;}
     </style>
     
     {% load staticfiles %}
@@ -14,9 +15,6 @@
     <link href="{% static 'news/css/daterangepicker.css' %}" rel="stylesheet" type="text/css"> 
     <script type="text/javascript" src="{% static 'news/js/moment.min.js' %}"></script>  
     <script type="text/javascript" src="{% static 'news/js/daterangepicker.js' %}"></script> 
-    <!--   
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.3.2/echarts.min.js"></script>
-    -->
     <script src="{% static 'news/js/echarts.min.js' %}"></script>
     <script>
         Date.prototype.format = function(fmt)   
@@ -56,9 +54,6 @@
 
 
             <div class="form-group  has-feedback">
-                <!--
-                <label class="control-label" for="daterange">起止时间:</label>
-                -->
                 <input type="text" class="form-control" id="daterange" 
                        style="cursor:pointer;background-color:#fff;" readonly>
                 <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
@@ -71,7 +66,7 @@
         </div>
 
         <div class="col-md-12 col-sm-12">
-            <div id="chart-container" style="width:100%;height:60%;"></div>
+            <div id="chart-container" class="draw-plain"></div>
         </div>
     </div>
   
@@ -112,21 +107,25 @@ var paint = (function(){
             });
             chart.setOption({
                 title:{
+                    left:"center",
                     text:"新闻搜集数量"
                 },
                 tooltip:{
                     confine:"true",
                 },
-                // legend:{
-                //     data:["活跃度"]
-                // },
+                legend:{
+                    data:["采集数量"],
+                    top:"20%",
+                    left:"15%",                    
+                    orient:"vertical",                 
+                },
                 xAxis:{
                     data:time,
                     //type:"time"
                 },
                 yAxis:{},
                 series:[{
-                    name:"采集数目",
+                    name:"采集数量",
                     type:"bar",
                     data:count
                 }]

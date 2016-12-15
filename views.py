@@ -9,7 +9,7 @@ import jieba
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse
-from django.db.models import Count,Avg,Sum
+from django.db.models import Count,Avg,Sum,F,Q
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.decorators import login_required
 
@@ -24,6 +24,7 @@ from news.getqiu.search import  conf
 
 from news.configure import getDaysRangeForSearchResult as daysrange
 from news.configure import getSearchTrace,banSpider,getMaxSearchPerDay
+from news.configure import getHalfRankForTrend
 from news.configure import getMaxItemOnHeadline
 from news.utils import convert2date,time2str,md5
 from news.settings import MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE
@@ -33,6 +34,15 @@ from ip2location.ipresolver import Resolver
 from ip2location.recoder import VisitorRecoder
 from ip2location.generator import IpGenerator
 from ip2location.userdetail import RequestInfo
+
+class FloatSum(Sum):
+    function="SUM"
+    name = "FloatSum"
+
+    def convert_value(self, value, expression, connection, context):
+        if value is None:
+            return 0
+        return float(value)    
 
 class LoginRequiredMixin(object):
     
@@ -154,16 +164,17 @@ class WordTrendAPI(TemplateView):
 
         start_time = convert2date(start_time) if start_time else datetime.date.today()-timedelta(days=daysrange())
         end_time = convert2date(end_time) if end_time else datetime.date.today()              
-
+        halfrank = getHalfRankForTrend()
         word_trend = News.objects\
                          .filter(news_time__gte=start_time,news_time__lte=end_time)\
                          .filter(tags__tag=query_word)\
                          .order_by("news_time")\
                          .values("news_time")\
-                         .annotate(n=Count("news_time"))
+                         .annotate(n=Count("news_time"))\
+                         .annotate(s=FloatSum(halfrank/(999-F("rank")+halfrank)))
         # 整理数据，做插零处理
         word_trend = self.contiue_date(word_trend,start_time,end_time)
-        word_trend = [{"time":time2str(d["news_time"]),"count":d["n"]} for d in word_trend]
+        word_trend = [{"time":time2str(d["news_time"]),"count":d["n"],"score":d["s"],"weight":d["w"]} for d in word_trend]
         return JsonResponse(word_trend,safe=False)
 
     def contiue_date(self,word_trend,start,end):
@@ -175,34 +186,27 @@ class WordTrendAPI(TemplateView):
         origin_index = 0
         while tmp <= end:
             if origin_index >= len(word_trend):
-                new_word_trend_list.append({"news_time":tmp,"n":0})
+                nextDataCeil = {"news_time":tmp,"n":0,"s":0,"w":0}
+                #new_word_trend_list.append(nextDataCeil)
                 tmp = tmp + timedelta(days=1)                
             elif tmp != word_trend[origin_index]["news_time"]:
                 # 只要是不等于，都应该插入0，不管是大还是小
-                new_word_trend_list.append({"news_time":tmp,"n":0})
+                nextDataCeil = {"news_time":tmp,"n":0,"s":0,"w":0}
                 tmp = tmp + timedelta(days=1)
             elif tmp == word_trend[origin_index]["news_time"]:
-                new_word_trend_list.append(word_trend[origin_index])
+                #new_word_trend_list.append(word_trend[origin_index])
+                nextDataCeil = word_trend[origin_index]
+                nextDataCeil["w"] = float(nextDataCeil["s"]/nextDataCeil["n"])
                 tmp = tmp + timedelta(days=1)
                 origin_index = origin_index + 1
+            
+            
+            new_word_trend_list.append(nextDataCeil)
 
         return new_word_trend_list
             
 
-class SpotForOneDayAPI(TemplateView):
-    """
-        加载指定时间指定关键词的前3条新闻新闻
-    """
-    def get(self,request):
-        """
-            返回一个List = [{"title":"XXX","hash_digest":"XXX"},.....]
-        """
-        q = request.GET.get("q","中国")
-        time = request.GET.get("t",datetime.date.today())
-        time = convert2date(time)
-        topNews = News.objects.filter(news_time=time,tags__tag=q).values("title","hash_digest").order_by("-rank")[0:3]
-        newsList = [t for t in topNews]
-        return JsonResponse(newsList,safe=False)
+
 
 class WordTrend(TemplateView):
     """
@@ -359,6 +363,17 @@ class NewsAPI(TemplateView):
             return getattr(self,action)(request)
         else:
             return JsonResponse({"status":""})
+
+    def spotForOneDay(self,request):
+        """
+            返回一个List = [{"title":"XXX","hash_digest":"XXX"},.....]
+        """
+        q = request.GET.get("q","中国")
+        time = request.GET.get("t",datetime.date.today())
+        time = convert2date(time)
+        topNews = News.objects.filter(news_time=time,tags__tag=q).values("title","hash_digest").order_by("-rank")[0:3]
+        newsList = [t for t in topNews]
+        return JsonResponse(newsList,safe=False)
 
     def countEveryDay(self,request):
         start_time = request.GET.get("start",datetime.date.today()-timedelta(days=daysrange()))

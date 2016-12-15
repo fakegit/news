@@ -11,7 +11,6 @@ urlpatterns = [
     url(r'^news-today/$',views.NewsInToday.as_view(),name="news_today"),
     url(r'^word-trend-api/$',views.WordTrendAPI.as_view(),name="word_trend_api"),
     url(r'^word-trend/$',views.WordTrend.as_view(),name="word_trend"),
-    url(r'^spot-for-oneday/$',views.SpotForOneDayAPI.as_view(),name="spot_for_oneday"),
     url(r'^migrate-relation/$',views.MigrateRelation.as_view(),name="migrate_relation"),
     url(r'^news-detail/(?P<news_id>[0-9a-zA-Z]{32})/$',views.NewsDetail.as_view(),name="news_detail"),
     url(r'^suggestion/$',views.Suggestion.as_view(),name='suggestion'),
