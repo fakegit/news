@@ -196,7 +196,12 @@ var paint = (function(){
                    left:"15%",
                    top:"20%",
                    orient:"vertical",
-                   data:["绝对活跃度","加权活跃度","活跃度权重"]
+                   data:["绝对活跃度","加权活跃度","活跃度权重"],
+                   selected: {
+                    '绝对活跃度': false,
+                    '加权活跃度': true,
+                    "活跃度权重": false,
+                    }
                 },
                 xAxis:{
                     data:time,
