@@ -113,7 +113,7 @@
         </div>
 
         <div class="col-md-12 col-sm-12">
-            <div id="chart-container" style="width:100%;height:80%;"></div>
+            <div id="chart-container" style="width:100%;height:70%;"></div>
         </div>
     </div>
   
@@ -158,11 +158,36 @@ var paint = (function(){
             var score = Array();
             var weight= Array();
 
+            var continueZeros = 0;
+            var currentNoZero = 0;
+            var preNoZero = 0;
+            var step = 0;
             $.each(data,function(n,value){
                 time.push(value.time);
                 count.push(value.count);
                 score.push(value.score);
-                weight.push(10*value.weight);
+                if(n==0){
+                    weight.push(10*value.weight);
+                    preNoZero = 10*value.weight;
+                }
+                else if(value.weight == 0){
+                    continueZeros = continueZeros + 1;
+                }else{
+                    currentNoZero = 10*value.weight;
+                    if(continueZeros == 0){
+                        preNoZero = 10*value.weight;
+                        weight.push(10*value.weight);
+                    }else{
+                        step = (currentNoZero - preNoZero)/(continueZeros+1);
+                        for(i=0;i<=continueZeros;i++){//直接等于,把最后一个算进去
+                            weight.push(preNoZero+(i+1)*step);
+                        }
+                        preNoZero = currentNoZero;
+                    }
+                    continueZeros = 0;
+                }
+                //最后一个如果是0,就被落下了.
+                
             });
             chart.setOption({
                 title:{
@@ -196,11 +221,11 @@ var paint = (function(){
                    left:"15%",
                    top:"20%",
                    orient:"vertical",
-                   data:["绝对活跃度","加权活跃度","活跃度权重"],
+                   data:["绝对活跃度","加权活跃度","活跃度质量"],
                    selected: {
                     '绝对活跃度': false,
                     '加权活跃度': true,
-                    "活跃度权重": false,
+                    "活跃度质量": true,
                     }
                 },
                 xAxis:{
@@ -229,7 +254,7 @@ var paint = (function(){
                         }
                     }                    
                 },{
-                    name:"活跃度权重",
+                    name:"活跃度质量",
                     type:"line",
                     smooth: true,
                     data:weight,
