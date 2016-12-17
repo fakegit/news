@@ -3,6 +3,7 @@ import urllib
 import random
 import datetime
 import time
+import psutil
 from datetime import timedelta
 
 import jieba
@@ -12,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count,Avg,Sum,F,Q
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
 from news.forms import SearchBoxForm,SuggestionForm,TestForm,TimeWindowForm,MigrateRelationForm
 from news.models import News,SearchTrace,Tags,TagsNews
@@ -410,4 +412,26 @@ class NewsAPI(TemplateView):
                 tmp = tmp + timedelta(days=1)
                 origin_index = origin_index + 1
 
-        return new_count_list                  
+        return new_count_list    
+
+
+class SystemStatus(LoginRequiredMixin,TemplateView):
+    """
+    """
+    def get(self,request,action):
+        if hasattr(self,action):
+            return getattr(self,action)(request)
+        else:
+            return JsonResponse({"status":"404"})
+    def systeminfo(self,request):
+        """
+        """
+        if not cache.get("systeminfo"):
+            
+            mem = psutil.virtual_memory()
+            systeminfo = {
+                "mem":mem.__dict__,
+                "cpu":{"used":psutil.cpu_percent(),"core":psutil.cpu_count()}
+            }
+            cache.set("systeminfo",systeminfo,2)
+        return JsonResponse(cache.get("systeminfo"))                  

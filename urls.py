@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^redirecting/$',views.TransformPage.as_view(),name='transform'),
     url(r'^about-us/$',views.AboutUs.as_view(),name='aboutus'),
     url(r'^news-api/(?P<action>[a-zA-Z0-9\-\_]{1,32})/$',views.NewsAPI.as_view(),name='news_api'),
+    url(r'^system-status/(?P<action>[a-zA-Z0-9\-\_]{1,32})/$',views.SystemStatus.as_view(),name='system_status'),
     url(r'^delete-search-record/$',views.DeleteSearchRecord.as_view(),name='delete_search_record'),
 ]
 

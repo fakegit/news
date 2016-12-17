@@ -7,7 +7,8 @@
         .white-text{color:#FFF!important}
         .toolbar-text{color:#FFF;font-size: 12px;}
         .toolbar-text:hover{color:#FFF;text-decoration:underline;}
-        .draw-plain{width:100%;height:70%;}
+        .draw-plain{width:100%;height:65%;}
+        .system-panel{width:100%;height:30%;}
     </style>
     
     {% load staticfiles %}
@@ -63,23 +64,66 @@
 
        <div class="col-md-6 col-sm-6 col-md-offset-3 col-sm-offset-3 hide" id="message">
            
-        </div>
+        </div>          
 
-        <div class="col-md-12 col-sm-12">
-            <div id="chart-container" class="draw-plain"></div>
-        </div>
     </div>
   
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-6">
+                <div id="system-cpu-container" class="system-panel"></div>
+            </div>  
+            <div class="col-md-12 col-sm-12 col-xs-6">
+                <div id="system-mem-container" class="system-panel"></div>
+            </div>              
+        </div>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <div id="chart-container" class="draw-plain"></div>
+        </div>         
+    </div>
 </div>
 
 <script>
+(function(){
+    /**
+    * 自适应调整高度
+    * 但是好像再ipad上并不是像我想的那样工作.
+    */
+    var width = $(window).width();
+    var height = $(window).height();
+    var ratio = width / height;
 
+    var width_percent = 0;
+    var height_percent = 0;
+
+    var toPercentStr = function(number){
+        return Math.floor(number*100)+"%";
+    }
+
+    if(width >= height)
+    {
+        //宽屏模式:比如电脑
+        //$("#system-cpu-container").css("width":"100%").css("height":"");
+        
+        width_percent = 1;
+        height_percent = 1 / ratio;
+
+    }
+    else{
+        //竖屏模式,比如手机
+        width_percent = 1;
+        height_percent = 1 * ratio;
+    }
+
+})();
 var paint = (function(){
     var today = new Date();
     var starttime = new Date(today.getTime()-1000*60*60*24*30*2);//最近2个月
     var endtime = new Date();
 
     var chart = echarts.init(document.getElementById("chart-container"));
+    var systemCPUChart = echarts.init(document.getElementById("system-cpu-container"));
+    var systemMEMChart = echarts.init(document.getElementById("system-mem-container"));
 
     /**
     *   暂时没用
@@ -90,7 +134,55 @@ var paint = (function(){
         return new Date(digitDate[0],digitDate[1]-1,digitDate[2]);
     };
 
+    var visualizeSystemStatus = function(){
+        var timeticker;
+        var showSystemStatus = function(){
+            $.get("{%url 'news:system_status' 'systeminfo'%}").done(function(data){
+                /**
+                * CPU状态
+                */
+                systemCPUChart.setOption({
+                    title:{
+                        top:"75%",
+                        left:"center",
+                        text:"CPU占用"
+                    },
+                    tooltip:{
+                        confine:"true",
+                    },
+                    series:[{
+                        type:'gauge',
+                        name:"cpu",
+                        data:data.cpu.used,
+                        splitNumber:10,
+                    }]
+                });
 
+                /**
+                * 内存占用状态
+                **/
+                systemMEMChart.setOption({
+                    title:{
+                        top:"75%",
+                        left:"center",
+                        text:"内存占用"
+                    },
+                    tooltip:{
+                        confine:"true",
+                    },
+                    series:[{
+                        type:'gauge',
+                        name:"cpu",
+                        data:data.mem.percent,
+                    }]
+                });
+
+            });
+        };
+
+        //showSystemStatus();
+        timeticker = setInterval(showSystemStatus,1500);
+    }
 
     /**
     *画图函数，必须传入3个参数，关键字，开始时间，截止时间
@@ -205,6 +297,7 @@ var paint = (function(){
         var start = convertDate2str(starttime);
         var end = convertDate2str(endtime);
         draw(start,end);
+        visualizeSystemStatus();
         
     };
 
