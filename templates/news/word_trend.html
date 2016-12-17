@@ -53,13 +53,13 @@
                         <form method="GET" action="{% url 'news:word_trend' %}">
         -->
                     <form onsubmit="return false;" method="POST">
-                        <div class="input-group">
+                        <div class="input-group input-group-lg has-success">
 
                             <input type="text" id="keyword" class="form-control" name="q" placeholder="相关话题" value="{{q}}">
                         
                         <span class="input-group-btn">
 
-                            <button class="btn btn-default" type="button" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
+                            <button class="btn btn-success" type="button" id="redraw">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
 
                         </span>
 

@@ -3,27 +3,23 @@
      {% load style %}
      {% load emphasize %}
      {% newsvolume as total_news_volume %}
-    <div class="input-group">
-      <!--
-      <input type="text" class="form-control" name="search_word" placeholder="搜索">
-      http://127.0.0.1:8000/search/?search_word=%E9%AB%98%E9%80%9F%E8%B7%AF
-       -->
+    <div class="input-group input-group-lg has-success has-feedback">
+
        <!--没有指定搜索狂，就自己写一个-->
        {% if search_form %}
            {{ search_form.search_word|addplaceholder:total_news_volume }}
        {% else %}
-
-           <input type="text" id="id_search_word" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
+           <input type="text" id="id_search_word" class="form-control input-lg" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
        {%endif%}
-       
       <span class="input-group-btn">
-
-        <a class="btn btn-default" id="search-option" data-toggle="modal" data-target="#search-option-modal">
-          <span class="glyphicon glyphicon-paperclip"></span>&nbsp;</a>
-        <button class="btn btn-warning" type="submit">&nbsp; <span class="glyphicon glyphicon-search"></span> &nbsp;</button>
-
+        <a class="btn btn-default btn-lg" id="search-option" 
+           data-toggle="modal" data-target="#search-option-modal"
+           style="border-color:rgb(60, 118, 61)">
+          <span class="glyphicon glyphicon-paperclip"></span>
+        </a>
+        <button class="btn btn-success btn-lg" type="submit">&nbsp;<span class="glyphicon glyphicon-search"></span>&nbsp;</button>
       </span>
-
+      
     </div><!-- /input-group -->
 
 <!-- Button trigger modal -->
@@ -32,7 +28,7 @@
 <!-- Modal -->
 <div class="modal fade" id="search-option-modal" tabindex="-1" role="dialog" aria-labelledby="search-option-title">
   s
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

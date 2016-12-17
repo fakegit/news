@@ -11,7 +11,7 @@ class AddCrawlerTaskForm(forms.ModelForm):
     
     
 class SearchBoxForm(forms.Form):
-    search_word = forms.CharField(label = u"搜索",max_length = 20,widget=forms.TextInput({'class':'form-control'}))
+    search_word = forms.CharField(label = u"搜索",max_length = 20,widget=forms.TextInput({'class':'form-control input-lg'}))
     start_time = forms.DateField(label=u'开始时间',required=False,widget = forms.DateInput({'class':'form-control ','type':'date'}))
     end_time = forms.DateField(label=u'截止时间',required=False,widget = forms.DateInput({'class':'form-control','type':'date'}))    
     
