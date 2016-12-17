@@ -11,12 +11,14 @@
        {% else %}
            <input type="text" id="id_search_word" class="form-control input-lg" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
        {%endif%}
+      <span class="glyphicon glyphicon-paperclip form-control-feedback" 
+            style="right:65px;pointer-events:auto;cursor:pointer"
+            id="search-option"
+            data-toggle="modal" 
+            data-target="#search-option-modal">
+      </span>        
+
       <span class="input-group-btn">
-        <a class="btn btn-default btn-lg" id="search-option" 
-           data-toggle="modal" data-target="#search-option-modal"
-           style="border-color:rgb(60, 118, 61)">
-          <span class="glyphicon glyphicon-paperclip"></span>
-        </a>
         <button class="btn btn-success btn-lg" type="submit">&nbsp;<span class="glyphicon glyphicon-search"></span>&nbsp;</button>
       </span>
       
