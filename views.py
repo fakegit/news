@@ -4,6 +4,8 @@ import random
 import datetime
 import time
 import psutil
+import lxml
+import lxml.html
 from datetime import timedelta
 
 import jieba
@@ -57,23 +59,10 @@ class HomePage(TemplateView):
     template_name = 'news/home_page.html'
 
     def get(self,request):
-
-        #ip_generator = IpGenerator() #ip地址本来应该从request当中获取，这里随机模拟一个
-        visitor_recoder = VisitorRecoder()#实列化一个用户访问记录器
-        request_info = RequestInfo(request)
-        ip_info = visitor_recoder.save(request_info.ip,request_info.port)#记录用户
-        #调试阶段，所以可以看看随机产生的ip，实际上线根据情况渲染    
-        #connections['default'].queries    
-        #search_form = SearchBoxForm()
-
-        ##
-        #   show the headline of today
-        ##
-        today = datetime.date.today()
-        news_today = News.objects.only('title','hash_digest')\
-                                 .filter(news_time=today,rank__gte=999)[0:MAX_RECOMMEDED_NEWS_ON_SEARCH_PAGE]
-
-        context = {'ip_info':ip_info.values(),"search_form":SearchBoxForm(),"news_today":news_today}
+        """
+            首页
+        """
+        context = {"search_form":SearchBoxForm()}
 
         return render(request,self.template_name,context)
         
@@ -391,7 +380,38 @@ class NewsAPI(TemplateView):
         news_count = self.contiue_date(news_count,start_time,end_time)
         news_count = [{"time":time2str(d["news_time"]),"count":d["n"]} for d in news_count]
         return JsonResponse(news_count,safe=False)
-
+    
+    def getRandomNews(self,request):
+        """
+            随机获取几条新闻
+        """
+        news_rank = map(lambda n:random.randrange(950,1000),range(0,3))
+        starttime = datetime.date.today()-timedelta(days=2)
+        endtime = datetime.date.today()
+        newsList = News.objects.filter(news_time__gte=starttime,news_time__lte=endtime)\
+                    .filter(rank__in=news_rank)\
+                    .only("id","title","hash_digest","publisher","content")\
+                    .values("title","hash_digest","publisher","content")[0:15]
+        recommendNews = []
+        for one in newsList:
+            oneDOM = lxml.html.document_fromstring(one["content"])
+            imgs = oneDOM.xpath("//img/@src")
+            if len(imgs) >= 1:
+                one_news = {
+                    "title":one["title"],
+                    "hash_digest":one["hash_digest"],
+                    "publisher":one["publisher"],
+                    "imgs":filter(lambda i:self._filterOutBadImg(i),imgs),
+                }
+                recommendNews.append(one_news)
+        recommendNews = filter(lambda n:n.has_key("imgs") and len(n["imgs"])> 0,recommendNews)
+        return JsonResponse(recommendNews,safe=False)
+    def _filterOutBadImg(self,imgsrc):
+        #if imgsrc.startswith("http://mat1.gtimg"):
+        #    return False
+        #elif imgsrc.startswith("http://inews.g"):
+        #    return False
+        return True
     def contiue_date(self,count,start,end):
         """
             通过group by得到的时间是不连续的，应该通过插入0让它连续

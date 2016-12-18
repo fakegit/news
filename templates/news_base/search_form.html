@@ -9,7 +9,7 @@
        {% if search_form %}
            {{ search_form.search_word|addplaceholder:total_news_volume }}
        {% else %}
-           <input type="text" id="id_search_word" class="form-control input-lg" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
+           <input type="text" id="id_search_word" class="form-control" name="search_word" placeholder="{{total_news_volume}}条新闻供您检索">
        {%endif%}
       <span class="glyphicon glyphicon-paperclip form-control-feedback" 
             style="right:69px;pointer-events:auto;cursor:pointer;top:6px;"
