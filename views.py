@@ -12,7 +12,7 @@ import jieba
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse
-from django.db.models import Count,Avg,Sum,F,Q
+from django.db.models import Count,Avg,Sum,F,Q,Max,Min
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -385,11 +385,13 @@ class NewsAPI(TemplateView):
         """
             随机获取几条新闻
         """
-        news_rank = map(lambda n:random.randrange(950,1000),range(0,3))
+        
         starttime = datetime.date.today()-timedelta(days=2)
         endtime = datetime.date.today()
-        newsList = News.objects.filter(news_time__gte=starttime,news_time__lte=endtime)\
-                    .filter(rank__in=news_rank)\
+        newsIdBound = News.objects.filter(news_time__gte=starttime,news_time__lte=endtime)\
+                          .aggregate(minId=Min("id"),maxId=Max("id"))
+        newsIdList = map(lambda n:random.randrange(newsIdBound['minId'],newsIdBound["maxId"]),range(0,20))
+        newsList = News.objects.filter(id__in=newsIdList)\
                     .only("id","title","hash_digest","publisher","content")\
                     .values("title","hash_digest","publisher","content")[0:15]
         recommendNews = []
