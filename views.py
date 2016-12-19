@@ -388,9 +388,14 @@ class NewsAPI(TemplateView):
         
         starttime = datetime.date.today()-timedelta(days=2)
         endtime = datetime.date.today()
-        newsIdBound = News.objects.filter(news_time__gte=starttime,news_time__lte=endtime)\
+        idRange = News.objects.filter(news_time__gte=starttime,news_time__lte=endtime)\
                           .aggregate(minId=Min("id"),maxId=Max("id"))
-        newsIdList = map(lambda n:random.randrange(newsIdBound['minId'],newsIdBound["maxId"]),range(0,20))
+
+        # 有可能采集系统这几天没有数据，那么这些数据可能是空的
+        minId = idRange["minId"] if idRange["minId"] else 1
+        maxId = idRange["maxId"] if idRange["maxId"] else 20
+
+        newsIdList = map(lambda n:random.randrange(minId,maxId),range(0,20))
         newsList = News.objects.filter(id__in=newsIdList)\
                     .only("id","title","hash_digest","publisher","content")\
                     .values("title","hash_digest","publisher","content")[0:15]

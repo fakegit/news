@@ -1,7 +1,7 @@
 
 {% load staticfiles %}
 <style>
-  .news-cover{width:100%;height:100px;overflow:hidden;margin-bottom: 5px;margin-top: 5px;}
+  .news-cover{width:100%;height:100px;overflow:hidden;margin-bottom: 5px;margin-top: 5px;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;}
   #recommend-container a{color:#000; text-decoration : none}
   #recommend-container a:hover{color:#000; text-decoration : underline}
   .hand-pointer{cursor:pointer;}
@@ -54,24 +54,21 @@
   (function(){
     var template3 = '<div class="col-md-12 col-sm-12 col-xs-12 panel panel">'+
                       '<h4><a href="{% url "news:home_page"%}news-detail/{hash_digest}">{title}</a><small><span> &nbsp; 来自:{publisher}</span></small></h4>'+
-                      '<div class="col-xs-4 col-sm-4 col-md-4">'+
+                      '<div class="col-xs-6 col-sm-4 col-md-4">'+
                         '<div class="news-cover">'+
                             '<img src="{image_url0}" style="height:100%;"/>'+
                         '</div>'+
                       '</div>'+
-                      '<div class="col-xs-4 col-sm-4 col-md-4">'+
+                      '<div class="col-xs-6 col-sm-4 col-md-4">'+
                         '<div class="news-cover">'+
                             '<img src="{image_url1} " style="height:100%;"/>'+
                         '</div>'+
                       '</div>'+
-                      '<div class="col-xs-4 col-sm-4 col-md-4">'+
+                      '<div class="hidden-xs col-sm-4 col-md-4">'+
                         '<div class="news-cover">'+
                           '<img src="{image_url2}" style="height:100%;"/>'+
                         '</div>'+
-                      '</div>'+
-                      '<div class="col-xs-12 col-sm-12 col-md-12">'+
-                          '<p>&nbsp;</p>'+
-                      '</div>'+                      
+                      '</div>'+                     
                     '</div>';
     
     var template ='<div class="col-md-12 col-sm-12 col-xs-12 panel">'+
