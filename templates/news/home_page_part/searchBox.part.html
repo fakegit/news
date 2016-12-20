@@ -20,17 +20,16 @@
   </div>
 
   <div class="row">
-      <div class="col-md-8 col-md-offset-2 col-sm-9 col-sm-offset-1">
+      <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
         <span class="pull-right hand-pointer text-muted" id="change">
           <span class="glyphicon glyphicon-repeat"></span>&nbsp;换一批
         <span>
           <span>&nbsp;</span>
         <span class="text-muted">
           <a href="{% url 'news:news_today' %}" class="glyphicon glyphicon-list-alt normal-href">今日头条</a>
-        <!--  <span class="badge" style="background-color:red">19</span> -->
         </span>
       </div>    
-      <div class="col-md-8 col-md-offset-2 col-sm-9 col-sm-offset-1" id="recommend-container">
+      <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12" id="recommend-container">
           <center><img src="{% static 'news/image/loading.gif' %}"></center>
           
       </div>
@@ -72,12 +71,12 @@
                     '</div>';
     
     var template ='<div class="col-md-12 col-sm-12 col-xs-12 panel">'+
-                    '<div class="col-md-3 col-sm-3 col-xs-4">'+
+                    '<div class="col-md-3 col-sm-3 col-xs-5">'+
                       '<div class="news-cover">'+
                         '<img src="{image_url0}" style="height:100%;"/>'+
                       '</div>'+
                     '</div>'+
-                    '<div class="col-md-9 col-sm-9 col-xs-8">'+
+                    '<div class="col-md-9 col-sm-9 col-xs-7">'+
                       '<h4><a href="{% url "news:home_page"%}news-detail/{hash_digest}">{title}</a></h4>'+
                         '<p>来自:{publisher}</p>'+
                     '</div>'+
@@ -86,6 +85,14 @@
       $.get("{% url 'news:news_api' 'getRandomNews' %}").done(function(data){
         var content = "";
         $.each(data,function(n,value){
+
+          /**
+          * 考虑到加载图片很费流量，最多显示6条 新闻
+          */
+          if(n > 5)
+          {
+            return true;
+          }
           if(value.imgs.length >=3 ){
             content  = content + template3.format({
                 title:value.title,
