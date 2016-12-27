@@ -1,19 +1,42 @@
 
-<div class='col-md-12'>
+<div class='col-md-12 col-sm-12 hidden-xs'>
  
 	<center>
 		<ul class="pagination">
-		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page=1">首页</a></li>			
-		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.prev_page}}">&lt;&lt;</a></li>
-		  {% for i in page_info.pages_indexs %}
-         {% if i == page_info.current_page %}
-			       <li class="active"><a href="#">{{ i }}</a></li>
-         {% else %}
-			       <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{ i }}">{{ i }}</a></li>         
-			   {% endif %}
+		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page=1">首页</a></li>		
+		{% if page_info.current_page == 1%}
+		  <li class="disabled"><a href="#">&lt;&lt;</a></li>
+		{% else %}
+		  <li>
+			  <a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.prev_page}}">
+				  &lt;&lt;
+			</a>
+		</li>
+		{% endif %}
+
+		 {% for i in page_info.pages_indexs %}
+			{% if i == page_info.current_page %}
+				<li class="active"><a href="#">{{ i }}</a></li>
+			{% else %}
+				<li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{ i }}">{{ i }}</a></li>         
+			{% endif %}
 		  {% endfor %}
-		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.next_page}}">&gt;&gt</a></li>
-		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.total_page}}">尾页</a></li>		  
+
+		{% if page_info.current_page == page_info.total_page%}
+		  <li class="disabled">
+			  <a href="#">
+			    &gt;&gt;
+			  </a>
+		 </li>
+		{% else %}
+		  <li>
+			  <a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.next_page}}">
+			   &gt;&gt;
+			  </a>
+		  </li>
+		{% endif %}		  
+
+		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.total_page}}">尾页</a></li>	 
 	   </ul>
    </center>
 </div>

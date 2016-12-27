@@ -1,0 +1,18 @@
+
+<div class='hidden-lg hidden-md hidden-sm col-xs-12'>
+    <nav>
+        <ul class="pager">
+         {% if 1 == page_info.current_page %}
+            <li class="disabled"><a href="#">&larr;前一页</a></li>
+         {% else %}
+            <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.prev_page}}">&larr;前一页</a></li>
+         {% endif %}
+
+         {% if page_info.total_page == page_info.current_page %}
+            <li class="disabled"><a href="#">下一页&rarr;</a></li>
+         {% else %}
+            <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.next_page}}">下一页&rarr;</a></li>
+         {% endif %}
+        </ul>
+    </nav> 
+</div>

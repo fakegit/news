@@ -396,7 +396,7 @@ class NewsAPI(TemplateView):
         maxId = idRange["maxId"] if idRange["maxId"] else 20
 
         newsIdList = map(lambda n:random.randrange(minId,maxId),range(0,20))
-        newsList = News.objects.filter(id__in=newsIdList)\
+        newsList = News.objects.filter(id__in=newsIdList).order_by("-id","-news_time","-rank")\
                     .only("id","title","hash_digest","publisher","content")\
                     .values("title","hash_digest","publisher","content")[0:15]
         recommendNews = []
