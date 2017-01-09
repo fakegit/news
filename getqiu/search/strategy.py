@@ -5,6 +5,7 @@
 # email  : "qiulimao@getqiu.com"
 from news.models import News
 from news.configure import getMaxCountForSearchResult as maxcount
+from django.db.models import Count
 """ 
  排序策略
 """ 
@@ -39,6 +40,20 @@ class NormalOrder(OrderStretagy):
             return the queryset
         """
         return self.queryset
+
+class NormalOrder2(OrderStretagy):
+
+    def __init__(self,queryset):
+        self.queryset = queryset
+
+    @property 
+    def count(self):
+        count =  self.queryset.aggregate(count=Count("*"))
+        return count.get("count",9)
+
+    @property 
+    def result(self):
+        return self.queryset.order_by("-news_time","-rank")
 
 class InQueryBasedOrder(OrderStretagy):
     """
