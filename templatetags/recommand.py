@@ -7,7 +7,7 @@ from news.models import Settings
 from news.configure import getDBConfigure
 register = template.Library()
 
-@register.inclusion_tag('news/hot_words_list.part.html',name='hotwords')
+@register.inclusion_tag('news_base/searchbar/hot_words_list.part.html',name='hotwords')
 def hotwords():
     #words_list = HotWords.read_most()
     if not cache.get("hot_words_list"):
