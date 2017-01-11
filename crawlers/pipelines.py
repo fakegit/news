@@ -84,5 +84,17 @@ class NewsPipeline(object):
             
             
             
-    
+class TestPipeline(object):
+    """
+    """
+
+    def process_item(self,item,spider): 
+        """
+        """
+        for k,v in item.items():
+            #if k != "content":
+            print "%s : %s" % (k,v)
+
+        print "----------------------------\n"
+
     

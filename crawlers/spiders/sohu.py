@@ -18,46 +18,46 @@ from crawlers.settings import DEFAULT_NEWS_COVER
 
 logger = logging.getLogger(__name__)
 
-class QqSpider(Spider):
+class SohuSpider(Spider):
     """
-      网易新闻的
+      sohu新闻的
       每天更新，每次仅需要爬一个页面
     """
-    name="qq"
-    allowed_domains=["news.qq.com","finance.qq.com","tech.qq.com","stock.qq.com",
-                     "auto.qq.com","ent.qq.com","sports.qq.com","city.qq.com",
-                     "house.qq.com","edu.qq.com","mil.qq.com"]
+    name="sohu"
+
+    allowed_domains=["news.sohu.com","mil.sohu.com","business.sohu.com","soyule.sohu.com",
+                     "sports.sohu.com","auto.sohu.com","fashion.sohu.com",
+                     "it.sohu.com","learning.sohu.com"]
     
-    start_urls=["http://news.qq.com","http://mil.qq.com/mil_index.htm","http://sports.qq.com/",
-                "http://ent.qq.com/","http://finance.qq.com/","http://stock.qq.com/",
-                "http://auto.qq.com/","http://tech.qq.com/","http://digi.tech.qq.com/",
-                "http://cd.house.qq.com/","http://bj.house.qq.com/","http://edu.qq.com/",
-                "http://news.qq.com/world_index.shtml","http://news.qq.com/society_index.shtml",
+    start_urls=["http://news.sohu.com","http://mil.sohu.com","http://business.sohu.com/",
+                "http://soyule.sohu.com","http://sports.sohu.com","http://auto.sohu.com/",
+                "http://fashion.sohu.com","http://it.sohu.com","http://learning.sohu.com/",
+                "http://it.sohu.com/936",
                 ]
     #start_urls = ["http://money.163.com/stock/"]
     
     custom_settings={'ITEM_PIPELINES':
             {
-              'crawlers.pipelines.NewsPipeline': 301,
-              #'crawlers.pipelines.TestPipeline': 301,
+              #'crawlers.pipelines.TestPipeline': 302,
+              'crawlers.pipelines.NewsPipeline': 302,
               
             }
         }
         
     domain_category_map={
-                        'finance':'finacial','tech':'technology','stock':'finacial',
-                        'ent':'entertainment','mobile':'mobile',
+                        'business':'finacial','it':'technology','stock':'finacial',
+                        'soyule':'entertainment','mobile':'mobile',
                         'news':"headline","sports":"sports","auto":"car","home":"home",
                         'mil':"military","discovery":"technology","digi":"electronic",
-                        'lady':'lady',"edu":"education",'jiankang':'healthy','travel':'travel',
+                        'fashion':'lady',"learning":"education",'jiankang':'healthy','travel':'travel',
                         'all':'all','other':'other','house':'house'
                         }
         
     def get_info_from_url(self,url):
         """
-        http://news.qq.com/a/20161202/003583.htm
+        http://news.sohu.com/20170111/n478435011.shtml
         """
-        infos_in_url = re.search(r'http://([a-z]{1,6}\.)?(?P<category>[a-z]{3,10})\.qq\.com/a/(?P<year>\d{4})(?P<month>\d{2})(?P<date>\d{2})/\d{6}\.html?',url)
+        infos_in_url = re.search(r'http://([a-z]{1,6}\.)?(?P<category>[a-z]{3,10})\.sohu\.com/(?P<year>\d{4})(?P<month>\d{2})(?P<date>\d{2})/n\d{9}\.s?html?',url)
         if not infos_in_url:
             return ("other",datetime.datetime.strftime(datetime.datetime.now(),'%Y-%m-%d'))
         v = infos_in_url.groupdict()
@@ -71,7 +71,7 @@ class QqSpider(Spider):
         """
         #http://news.163.com/15/1105/03/B7KIM45J00014AED.html
         """
-        linkextractor = LinkExtractor(allow=("http://([a-z]{1,6}\.)?[a-z]{3,10}\.qq\.com/a/\d{4}\d{4}/\d{6}\.html?"),
+        linkextractor = LinkExtractor(allow=("http://([a-z]{1,6}\.)?[a-z]{3,10}\.sohu\.com/\d{4}\d{4}/n\d{9}\.s?html?"),
                                         #restrict_css=("body>div.ns-bg-wrap>div.ns-area.cf>div.ns-main>div.ns-mr60")
                                         )
         #在指定区域内抓住的链接，才是想要的链接；采用linkextractor可以有效的抓取想要的链接
@@ -96,86 +96,37 @@ class QqSpider(Spider):
         title = response.xpath("/html/head/title/text()").extract()
         if title:
             #news_loader.add_value("title",title)
-            news_loader.add_xpath('title','/html/head/title/text()')
+            news_loader.add_xpath('title',"/html/head/title/text()")
         else:
-            news_loader.add_xpath("title","//div[@class='qq_article']/div[@class='hd']/h1/text()")
+            news_loader.add_xpath("title","//h1[@itemprop='headline']/text()")
             logger.warning("!!!! did't get title on head,parse <%s>'s body instead." % response.url)
             
         news_loader.add_value('rank',str(response.meta['rank']))
         news_loader.add_value('news_time',response.meta['news_time'])
         #news_loader.add_css('publisher',"#ne_article_source::text")
-        publisher = response.xpath("string(//div[@class='a_Info']/span[@class='a_source'])").extract()
+        publisher = response.xpath("//span[@id='media_span']/a/span/text()").extract()
 
         if publisher and publisher[0]:
-            news_loader.add_xpath('publisher',"string(//div[@class='a_Info']/span[@class='a_source'])")
+            news_loader.add_xpath('publisher',"//span[@id='media_span']/a/span/text()")
         else:
-            news_loader.add_value("publisher",u"qq.com")
+            news_loader.add_value("publisher",u"sohu.com")
         news_loader.add_value("news_url",response.url)
 
 
         # content = response.xpath("//div[@id='Cnt-Main-Article-QQ']/p[not(style)]").extract()
         # if content:
-        news_loader.add_xpath('content',"//div[@id='Cnt-Main-Article-QQ']/p[not(style)]")
+        news_loader.add_xpath('content',"//div[@id='contentText']")
         # else:
         #     news_loader.add_xpath("content","//div[@class='w_text']")
         #     logger.warning("!!!! plan A failed,use plan B instead in parsing content <%s>" % response.url)
         
         news_loader.add_value('category',response.meta['category'])
-        news_loader.add_value("site",u"qq.com")
+        news_loader.add_value("site",u"sohu.com")
 
         # 不要到pipeline当中去找这个cover
-        cover = response.xpath("//div[@id='Cnt-Main-Article-QQ']/p[not(style)]").xpath(".//img/@src[starts-with(.,'http')]").extract()
+        cover = response.xpath("//div[@id='contentText']/div[@itemprop='articleBody']").xpath(".//img/@src[starts-with(.,'http')]").extract()
         news_cover = cover[0] if cover else DEFAULT_NEWS_COVER
         news_loader.add_value("cover",news_cover)
 
         return news_loader.load_item()
         
-
-
-class newsQQ(QqSpider):
-    name="news_qq"
-    start_urls = ["http://news.qq.com"]
-
-class milQQ(QqSpider):
-    name="mil_qq"
-    start_urls = ["http://mil.qq.com/mil_index.htm"]
-
-class sportsQQ(QqSpider):
-    name="sports_qq"
-    start_urls = ["http://sports.qq.com/"]
-
-class entQQ(QqSpider):
-    name="ent_qq"
-    start_urls = ["http://ent.qq.com/"]
-
-class financeQQ(QqSpider):
-    name="finance_qq"
-    start_urls = ["http://finance.qq.com/"]
-
-class stockQQ(QqSpider):
-    name="stock_qq"
-    start_urls = ["http://stock.qq.com/"]
-
-class autoQQ(QqSpider):
-    name="auto_qq"
-    start_urls = ["http://auto.qq.com/"]
-
-class techQQ(QqSpider):
-    name="tech_qq"
-    start_urls = ["http://tech.qq.com/"]
-
-class digiTechQQ(QqSpider):
-    name="digi_tech_qq"
-    start_urls = ["http://digi.tech.qq.com/"]
-
-class cdHouseQQ(QqSpider):
-    name="cd_house_qq"
-    start_urls = ["http://cd.house.qq.com/"]
-
-class bjHouseQQ(QqSpider):
-    name="bj_house_qq"
-    start_urls = ["http://bj.house.qq.com/"]
-
-class eduQQ(QqSpider):
-    name="edu_qq"
-    start_urls = ["http://edu.qq.com/"]

@@ -19,9 +19,9 @@ def extract_time(str_content):
         return datetime.datetime.strftime(datetime.datetime.now(),'%Y-%m-%d %H:%M:%S')
 def clean_title(str_content):
     """
-        直接从标题中提取title。去除163
+        直接从标题中提取title。去除163,tencent,sohu
     """
-    cleaned_string=re.sub(r'_.*$','',str_content.encode('utf-8'))
+    cleaned_string=re.sub(r'(_|\-搜狐).*$','',str_content.encode('utf-8'))
     return cleaned_string.decode('utf-8')    
 
 def strip_blank(str_content):
@@ -50,6 +50,6 @@ class NewsLoader(ItemLoader):
     #news_time_in = Compose(TakeFirst(),extract_time,)
         #MapCompose是将整个list传个一个processor,processors对list中的每个元素处理，结果在给第二个processors
     #content_in = Identity()#MapCompose(remove_tags,)
-    content_id = MapCompose(strip_blank2,)
+    content_in = MapCompose(strip_blank2,)
     title_in = MapCompose(unicode.strip,clean_title)
     
