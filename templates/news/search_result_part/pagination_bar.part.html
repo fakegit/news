@@ -36,7 +36,8 @@
 		  </li>
 		{% endif %}		  
 
-		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.total_page}}">尾页</a></li>	 
+		  <li><a href="{% url 'news:search_result' %}?{{encoded_url.page}}&page={{page_info.next_page}}">下一页</a></li>	
+
 	   </ul>
    </center>
 </div>

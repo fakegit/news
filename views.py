@@ -98,7 +98,9 @@ class SearchResult(TemplateView):
 
             start_time = convert2date(start_time) if start_time else datetime.date.today()-timedelta(days=daysrange())
             end_time = convert2date(end_time) if end_time else datetime.date.today()
-
+            # 不要超过180天的搜索,实在是太耗资源了.
+            if end_time - start_time >= timedelta(days=180):
+                start_time = end_time - timedelta(days=180)
             #以上获取筛选需要的字段
             start_view_context = ViewContext(News.objects.only('title','hash_digest','news_time','rank','cover',"news_url").all(),
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},

@@ -51,12 +51,15 @@
                   {% now "Y-m-d" as today %}
                   <p class="help-block">最新的新闻截止于：{{ today }}</p>
               </div>
+              <p class="help-block"><font color="red">注意:最长时间范围不得超过180天!</font></p>
 
       </div>
       <div class="modal-footer">
 
         <a class="btn btn-primary" id="reset-search-form">重置<a>
-        <button type="button" class="btn btn-default" data-dismiss="modal">确认</button>
+        <button type="submit" class="btn btn-default" >
+          <span class="glyphicon glyphicon-search"></span>&nbsp;搜索
+        </button>
 
       </div>
     </div>
