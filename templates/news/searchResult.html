@@ -11,6 +11,8 @@
 
 {% block main_body %}
 {% load style %}
+{% load emphasize %}
+{% start_render_time as t1 %}
 <div class="container">
     <div class = "row">
         <div class="col-md-12">
@@ -29,7 +31,7 @@
                 </ol>
 
                 <ol class="breadcrumb">
-                  <li>getqiu历经<font color="blue"> {{ search_elapsed_time|sec2millis:"3" }} </font>毫秒</li>
+                  <li>getqiu历经<font color="blue" id="search-time-elapse-section"> {{ search_elapsed_time|sec2millis:"3" }} </font>毫秒</li>
                   <li>
                       在指定时间范围找到
                      <font color="blue">
@@ -90,6 +92,16 @@
      </div>
 </div>
 
+<script>
+(function(){
+    var render_time_elapse = {{t1|calculate_render_time|sec2millis:"3"}}+{{search_elapsed_time|sec2millis:"3"}};
+    $("#search-time-elapse-section").html(render_time_elapse.toPrecision(6));
+    console.log("hitting the database:"+{{t1|calculate_render_time|sec2millis:"3"}});
+    console.log("search time elapse:{{search_elapsed_time|sec2millis:"3"}}");
+    console.log("总搜索时间:"+render_time_elapse);
+})();
+
+</script>
 {% include 'news/search_result_part/pagination_button.part.html' %}
 {% include 'news/search_result_part/pagination_bar.part.html' %}
 {% endblock %}

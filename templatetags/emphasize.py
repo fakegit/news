@@ -7,6 +7,7 @@ import lxml.html
 from django.core.cache import cache
 from news.configure import getDBConfigure
 from pywebsites import settings
+import time
 
 register = template.Library()
 
@@ -38,6 +39,14 @@ def newsvolume():
         cache.set('news_amount',news_amount, newsVolumeCountCacheLife)  
     return cache.get("news_amount")
     #return "192929"
+
+@register.assignment_tag(name="start_render_time")
+def start_render_time():
+    return time.time()
+
+@register.filter(name="calculate_render_time")
+def calculate_render_time(starttime):
+    return time.time() - starttime
     
 @register.filter(name="find_cover_img")
 def find_cover_img(input_string):
