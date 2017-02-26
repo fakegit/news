@@ -48,7 +48,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
+                <div class="col-md-6 col-md-offset-1 col-sm-8 col-sm-offset-1">
 
                     <form onsubmit="return false;" method="POST">
                         <div class="input-group input-group-lg has-success has-feedback">
@@ -96,14 +96,16 @@
 </div>
 <!-- -->
                 <div class="row">
-                   <div class="col-md-5 col-md-offset-1 col-sm-8 col-sm-offset-1">
+                   <div class="col-md-6 col-md-offset-1 col-sm-8 col-sm-offset-1">
                         {% load recommand %}
                         {% recommend_words as hotwords %}
+                        <small>
                         <ul class="list-inline">
                             {% for hot_word in hotwords %}
                                 <li><a href="{% url 'news:word_trend' %}?q={{hot_word}}">{{hot_word}}</a></li>
                             {%endfor%}
                         </ul>                     
+                        </small>
                     </div>
                 </div>
         </div>
@@ -177,7 +179,7 @@ var paint = (function(){
     */
     var draw = function(q,start,end){
 
-        $.get("{%url 'news:word_trend_api'%}?q="+q+"&start="+start+"&end="+end).done(function(data){
+        $.get(encodeURI("{%url 'news:word_trend_api'%}?q="+q+"&start="+start+"&end="+end)).done(function(data){
             var time  = Array();
             var count = Array();
             var score = Array();
@@ -222,7 +224,7 @@ var paint = (function(){
                 tooltip:{
                     formatter: function (params, ticket, callback) {
                         var k = $("#keyword").val();
-                        $.get('{% url "news:news_api" "spotForOneDay" %}?q='+k+"&t="+params.name, function (content) {
+                        $.get(encodeURI('{% url "news:news_api" "spotForOneDay" %}?q='+k+"&t="+params.name), function (content) {
                             callback(ticket, showNewsTitle(content,params.name));
                             // console.log(ticket);
                             // console.log(content);
@@ -248,9 +250,9 @@ var paint = (function(){
                    orient:"vertical",
                    data:["绝对活跃度","加权活跃度","活跃度质量"],
                    selected: {
-                    '绝对活跃度': false,
-                    '加权活跃度': true,
-                    "活跃度质量": true,
+                    "绝对活跃度": true,
+                    "加权活跃度": true,
+                    "活跃度质量": false,
                     }
                 },
                 xAxis:{
