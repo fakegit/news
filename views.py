@@ -102,7 +102,11 @@ class SearchResult(TemplateView):
             if end_time - start_time >= timedelta(days=180):
                 start_time = end_time - timedelta(days=180)
             #以上获取筛选需要的字段
-            start_view_context = ViewContext(News.objects.only('title','hash_digest','news_time','rank','cover',"news_url").all(),
+
+            ##
+            # 不要选其它字段了，直接把id选出来就行，这样可以使用覆盖索引
+            ##
+            start_view_context = ViewContext(News.objects.only('id').all(),
                                              {'search_form':search_form,"news_start_date":start_time,"news_end_date":end_time},
                                              {})
             filter_list = [
@@ -113,9 +117,16 @@ class SearchResult(TemplateView):
             m = lambda context,_filter:_filter.execute(context) #这句话就是执行各个filter的接口
             start_search_clock  = time.time()
             view_context = reduce(m,filter_list,start_view_context)
+            context = view_context.context
+            docs_id_list = map(lambda o:o.id,context["model_objects"])            
             end_search_clock  = time.time()  
             #reduce 一把搞定！
-            context = view_context.context
+            ##
+            # 对这10条进行排序，虽然使用了filesort，但是毕竟只有10条记录排序。不会有性能问题
+            ##
+            context["model_objects"] = News.objects.only("id","title","rank","cover","news_url","hash_digest","news_time")\
+                                           .filter(id__in=docs_id_list).order_by("-news_time","-rank").all()
+
             context["search_elapsed_time"] = end_search_clock - start_search_clock
 
 
